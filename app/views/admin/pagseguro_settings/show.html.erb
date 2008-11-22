@@ -1,0 +1,8 @@
+<h2><%= t("PagSeguro Settings") %></h2>
+
+<div id="pagseguro_settings">
+  <div>
+    <strong><%= t('Account') %>:</strong> <%= Spree::Pagseguro::Config[:account] %>
+  </div>
+  <%= link_to t("Edit"), edit_admin_pagseguro_settings_path %>
+</div>

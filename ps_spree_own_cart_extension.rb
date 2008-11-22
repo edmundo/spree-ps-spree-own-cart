@@ -12,7 +12,7 @@ class PsSpreeOwnCartExtension < Spree::Extension
     Admin::OrdersController.class_eval do
       before_filter :add_ps_own_cart_txns, :only => :show
       def add_ps_own_cart_txns
-        @txn_partials << 'pp_own_cart_txns'
+        @txn_partials << 'ps_own_cart_txns'
       end
     end
     
@@ -57,7 +57,7 @@ class PsSpreeOwnCartExtension < Spree::Extension
     Admin::ConfigurationsController.class_eval do
       before_filter :add_ps_spree_own_cart_link, :only => :index
       def add_ps_spree_own_cart_link
-        @extension_links << {:link =>  '#' , :link_text => Globalite.localize(:ext_ps_spree_own_cart), :description => Globalite.localize(:ext_ps_spree_own_cart_description)}
+        @extension_links << {:link => admin_pagseguro_settings_path , :link_text => Globalite.localize(:ext_ps_spree_own_cart), :description => Globalite.localize(:ext_ps_spree_own_cart_description)}
       end
     end
   end

@@ -1,12 +1,11 @@
-<form target="pagseguro" action="<%= Spree::Pagseguro::Config[:pagseguro_url] %>" method="post">
+<form target="pagseguro" action="<%= Spree::Pagseguro::Config[:pagseguro_billing_url] %>" method="post">
 
 <input type="hidden" name="email_cobranca" value="<%= truncate(h(Spree::Pagseguro::Config[:account]), 200) %>" />
 <input type="hidden" name="tipo" value="CP" />
 <input type="hidden" name="moeda" value="BRL" />
 
-<!-- Dados do cliente
 <input type="hidden" name="cliente_nome" value="" />
-<input type="hidden" name="cliente_cep" value="" />
+<input type="text" name="cliente_cep" value="93010090" />
 <input type="hidden" name="cliente_end" value="" />
 <input type="hidden" name="cliente_num" value="" />
 <input type="hidden" name="cliente_compl" value="" />
@@ -17,13 +16,25 @@
 <input type="hidden" name="cliente_ddd" value="" />
 <input type="hidden" name="cliente_tel" value="" />
 <input type="hidden" name="cliente_email" value="" />
--->
 
-<!-- Frete
 <input type="hidden" name="item_frete_1" value="" />
-<input type="hidden" name="item_peso_1" value="" />
+
+<%
+total_weight = 0
+@order.line_items.each do |item|
+  property = item.variant.product.properties.find_by_name('generic_weight')
+  property_value = item.variant.product.product_properties.find_by_property_id(property.id) if property
+  if property
+    total_weight += property_value.value.to_i
+  elsif item.variant.weight
+    total_weight += item.variant.weight if item.variant.weight
+  end
+end
+-%>
+
+Peso total: <%= total_weight %>
+<input type="hidden" name="item_peso_1" value="1500" />
 <input type="hidden" name="tipo_frete" value="EN" />
--->
 
 <input type="hidden" name="ref_transacao" value="<%= truncate(h(@order.number.to_s), 200) %>" />
 
@@ -37,11 +48,9 @@ Obs.: Máximo de 25 items.
   <input type="hidden" name="item_valor_<%= index + 1 %>" value="<%= truncate(h(item.price.to_s), 7) %>" />
 <% end %>
 
-<input type="text" name="cliente_cep" value="" />
-<!--
-<A href=https://pagseguro.uol.com.br/CalculaFrete.aspx?CepOrigem=93010-090&Peso=10&Valor=0,00 target=_blank><IMG src=https://pagseguro.uol.com.br/Imagens/imgCalculoFrete.gif border=0></A>
--->
 
 <%= image_submit_tag "btnFinalizaBR.jpg" %>
 
 </form>
+
+<%= render :partial => 'pagseguro_shipping_calculation' %>

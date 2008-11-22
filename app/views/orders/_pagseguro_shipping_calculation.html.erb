@@ -1,0 +1,9 @@
+<form target="pagseguro" action="<%= Spree::Pagseguro::Config[:pagseguro_shipping_url] %>" method="post">
+
+  <input type="text" name="CepOrigem" value="93010-090" />
+  <input type="hidden" name="Peso" value="1" />
+  <input type="hidden" name="Valor" value="0,00" />
+
+  <%= image_submit_tag "imgCalculoFrete.gif" %>
+
+</form>
