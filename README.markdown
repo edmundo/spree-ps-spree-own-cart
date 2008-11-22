@@ -4,5 +4,4 @@ Suporte ao sistema brasileiro de pagamentos online PagSeguro utilizando o carrin
 
 ## Instalação
 
-        script/extension install git://github.com/SeuNome/spree-pagseguro-carrinho-proprio.git
-
+        script/extension install git://github.com/edmundo/spree-ps-spree-own-cart.git
