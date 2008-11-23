@@ -4,13 +4,15 @@ class PagseguroConfiguration < Configuration
   preference :pagseguro_sandbox_url, :string, :default => "https://localhost/security/webpagamentos/webpagto.aspx"
   preference :pagseguro_billing_url, :string, :default => "https://pagseguro.uol.com.br/security/webpagamentos/webpagto.aspx"
   preference :pagseguro_shipping_url, :string, :default => "https://pagseguro.uol.com.br/CalculaFrete.aspx"
-  
+  preference :pagseguro_verification_url, :string, :default => "https://pagseguro.uol.com.br/Security/NPI/Default.aspx"
   # these are just default preferences of course, you'll need to change them to something meaningful
   preference :account, :string, :default => "your_account@example.com"
   # always use the sandbox even when in production
   preference :always_use_sandbox, :boolean, :default => false
   #preference :ipn_notify_host, :string, :default => "http://localhost:3000"
   #preference :success_url, :string, :default => "http://localhost:3000/checkout/success"
+  # security token
+  preference :token, :string, :default => "C3671EA724CC82A3D9AB2D4F887B61F2"
   
   validates_presence_of :name
   validates_uniqueness_of :name

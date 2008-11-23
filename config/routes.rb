@@ -9,7 +9,7 @@
 # http://minharede.redirectme.net:55000/orders/685019152/paypal_payment
 # http://minharede.redirectme.net:55000/orders/685019152/paypal_payment/successful
 
-map.resource :pagseguro_payment, :collection => {:successful => :post}
+map.resource :pagseguro_payment, :collection => {:notification => :post}
 
 map.namespace :admin do |admin|
   admin.resource :pagseguro_settings
