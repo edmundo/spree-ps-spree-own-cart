@@ -7,8 +7,10 @@ class PagseguroConfiguration < Configuration
   
   # these are just default preferences of course, you'll need to change them to something meaningful
   preference :account, :string, :default => "your_account@example.com"
-#  preference :ipn_notify_host, :string, :default => "http://localhost:3000"
-  preference :success_url, :string, :default => "http://localhost:3000/checkout/success"
+  # always use the sandbox even when in production
+  preference :always_use_sandbox, :boolean, :default => false
+  #preference :ipn_notify_host, :string, :default => "http://localhost:3000"
+  #preference :success_url, :string, :default => "http://localhost:3000/checkout/success"
   
   validates_presence_of :name
   validates_uniqueness_of :name

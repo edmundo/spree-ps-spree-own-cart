@@ -7,6 +7,11 @@
     <strong><%= t('Account') %></strong>
     <%= text_field_tag('preferences[account]', Spree::Pagseguro::Config[:account])%>
   </p>
+  <p>
+    <strong><%= t('always_use_sandbox') %></strong>
+    <%= check_box_tag('preferences[always_use_sandbox]', "1", Spree::Pagseguro::Config[:always_use_sandbox]) %>
+    <input name="preferences[always_use_sandbox]" type="hidden" value="0" />
+  </p>
 </div>
 <%= submit_tag t('Save Preferences') %>
 <% end -%>
