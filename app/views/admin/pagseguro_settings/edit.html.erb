@@ -1,10 +1,10 @@
 <% form_tag(admin_pagseguro_settings_path, :method => :put) do -%>
 
-<h2><%= t('PagSeguro Settings') %></h2>
+<h2><%= t('pagseguro_setting') %></h2>
 
 <div>
   <p>
-    <strong><%= t('Account') %></strong>
+    <strong><%= t('pagseguro_account') %></strong>
     <%= text_field_tag('preferences[account]', Spree::Pagseguro::Config[:account])%>
   </p>
   <p>

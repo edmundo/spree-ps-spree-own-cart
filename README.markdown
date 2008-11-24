@@ -17,6 +17,8 @@ Não é necessário "escolher" o PagSeguro como forma de pagamento já que a fin
 ## Testes
 
 Favor fazer o download do ambiente de testes em http://visie.com.br/pagseguro/ambientetestes.php
+Conforme as instruções, você deve rodá-lo e ele ficará disponível localmente na porta 443.
+Eu particularmente não altero o arquivo /etc/hosts, a extensão tenta utilizar automaticamente https://localhost como gateway de pagamento se você setar a opção "Sempre utilizar o servidor de testes" ou rodar o sistema em modo de desenvolvimento.
 
 ## Agradecimentos
 

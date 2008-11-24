@@ -1,2 +1,5 @@
 ext_ps_spree_own_cart: PagSeguro Carrinho Próprio
 ext_ps_spree_own_cart_description: Suporte ao sistema brasileiro de pagamentos online PagSeguro utilizando o carrinho próprio do Spree.
+pagseguro_setting: Configuração do PagSeguro
+always_use_sandbox: Sempre utilizar o servidor de testes
+pagseguro_account: Conta PagSeguro
