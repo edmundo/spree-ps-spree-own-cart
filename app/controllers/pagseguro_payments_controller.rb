@@ -1,6 +1,6 @@
 class PagseguroPaymentsController < Spree::BaseController
   skip_before_filter :verify_authenticity_token      
-#  before_filter :load_object, :only => :notification
+  #before_filter :load_object, :only => :notification
   layout 'application'
   
   resource_controller :singleton
@@ -27,8 +27,6 @@ class PagseguroPaymentsController < Spree::BaseController
       if refered_order
         # Is this the first notification received?
         if !refered_order.pagseguro_payment
-          logger.info("First notification received for #{refered_order.number}.")
-          
           # Creates the payment object
           a_payment = PagseguroPayment.new(:email => notification.client_email)
           refered_order.pagseguro_payment = a_payment
@@ -42,9 +40,7 @@ class PagseguroPaymentsController < Spree::BaseController
                              :received_at => notification.received_at)
           a_payment.txns << a_transaction
         else
-          logger.info("Another notification received for #{refered_order.number}.")
           # Load the payment object.
-          # Creates the payment object
           a_payment = refered_order.pagseguro_payment
 
           # Create a transaction which records the details of the notification
@@ -59,10 +55,9 @@ class PagseguroPaymentsController < Spree::BaseController
         
         refered_order.update_attribute("ip_address", request.env['REMOTE_ADDR'] || "unknown")
 
-        # We then send back the request to be validated adding two more fields Comando=validar&Token=00000000000000
+        # We then send back the request to be validated adding two more fields.
         # So be can really trust it came from PagSeguro.
-        verification_status = "VERIFICADO"
-        if verification_status == "VERIFICADO"
+        if notification.acknowledge(Spree::Pagseguro::Config[:token])
           # Calculate here total extra taxes.
           extra_taxes = "0"
           # Calculate here total price.
@@ -82,8 +77,6 @@ class PagseguroPaymentsController < Spree::BaseController
             refered_order.fail_payment!
             logger.info("Received an unexpected status for order: #{refered_order.number}")
           end
-        elsif verification_status == "FALSO"
-          logger.info("PagSeguro did not recognised the notification.")
         else
           logger.info("Unexpected verification error, received #{verification_status}.")
         end

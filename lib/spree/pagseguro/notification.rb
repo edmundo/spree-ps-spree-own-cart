@@ -130,17 +130,23 @@ module Spree #:nodoc:
       #     else
       #       ... log possible hacking attempt ...
       #     end
-      def acknowledge
-        payload =  raw
+      def acknowledge(token)
+        if Spree::Pagseguro::Config[:always_use_sandbox]
+          pagseguro_url = Spree::Pagseguro::Config[:ps_sandbox_verification_url]
+        elsif RAILS_ENV == 'development'
+          pagseguro_url = Spree::Pagseguro::Config[:ps_sandbox_verification_url]
+        else
+          pagseguro_url = Spree::Pagseguro::Config[:ps_verification_url]
+        end
 
-        response = ssl_post(Paypal.service_url + '?cmd=_notify-validate', payload, 
-          'Content-Length' => "#{payload.size}",
-          'User-Agent'     => "Active Merchant -- http://activemerchant.org"
-        )
+        payload = raw
+
+        new_payload = "Comando=validar&Token=#{token}&" + payload
+        response = ssl_post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
         
-        raise StandardError.new("Faulty paypal result: #{response}") unless ["VERIFIED", "INVALID"].include?(response)
+        raise StandardError.new("Faulty pagseguro result: #{response}") unless ["VERIFICADO", "FALSO"].include?(response)
 
-        response == "VERIFIED"
+        response == "VERIFICADO"
       end
       private
 

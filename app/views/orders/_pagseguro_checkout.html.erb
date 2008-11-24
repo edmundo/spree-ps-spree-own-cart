@@ -1,10 +1,10 @@
 <%
 if Spree::Pagseguro::Config[:always_use_sandbox]
-  pagseguro_url = Spree::Pagseguro::Config[:pagseguro_sandbox_url]
+  pagseguro_url = Spree::Pagseguro::Config[:ps_sandbox_billing_url]
 elsif RAILS_ENV == 'development'
-  pagseguro_url = Spree::Pagseguro::Config[:pagseguro_sandbox_url]
+  pagseguro_url = Spree::Pagseguro::Config[:ps_sandbox_billing_url]
 else
-  pagseguro_url = Spree::Pagseguro::Config[:pagseguro_billing_url]
+  pagseguro_url = Spree::Pagseguro::Config[:ps_billing_url]
 end
 %>
 
