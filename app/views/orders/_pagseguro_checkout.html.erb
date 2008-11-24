@@ -28,21 +28,6 @@ end
 <input type="hidden" name="cliente_email" value="" />
 
 <input type="hidden" name="item_frete_1" value="" />
-
-<%
-total_weight = 0
-@order.line_items.each do |item|
-  property = item.variant.product.properties.find_by_name('generic_weight')
-  property_value = item.variant.product.product_properties.find_by_property_id(property.id) if property
-  if property
-    total_weight += property_value.value.to_i
-  elsif item.variant.weight
-    total_weight += item.variant.weight if item.variant.weight
-  end
-end
--%>
-
-Peso total: <%= total_weight %>
 <input type="hidden" name="item_peso_1" value="1500" />
 <input type="hidden" name="tipo_frete" value="EN" />
 
