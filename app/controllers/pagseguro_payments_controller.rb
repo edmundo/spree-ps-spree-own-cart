@@ -104,7 +104,7 @@ class PagseguroPaymentsController < Spree::BaseController
       session_order.update_attribute("checkout_complete", true) 
       # remove order from the session (its not really practical to allow the user to edit the session anymore)
       session[:order_id] = nil
-      redirect_to order_url(session_order) and return
+      #redirect_to order_path(session_order) and return
   end
 
 #    if logged_in?

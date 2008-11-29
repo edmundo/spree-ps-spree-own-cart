@@ -2,7 +2,6 @@ class Admin::PagseguroSettingsController < Admin::BaseController
 
   def update
     Spree::Pagseguro::Config.set(params[:preferences])
-    #Spree::Preferences::MailSettings.init
     
     respond_to do |format|
       format.html {

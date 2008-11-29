@@ -132,11 +132,11 @@ module Spree #:nodoc:
       #     end
       def acknowledge(token)
         if Spree::Pagseguro::Config[:always_use_sandbox]
-          pagseguro_url = Spree::Pagseguro::Config[:ps_sandbox_verification_url]
+          pagseguro_url = Spree::Pagseguro::Config[:sandbox_verification_url]
         elsif RAILS_ENV == 'development'
-          pagseguro_url = Spree::Pagseguro::Config[:ps_sandbox_verification_url]
+          pagseguro_url = Spree::Pagseguro::Config[:sandbox_verification_url]
         else
-          pagseguro_url = Spree::Pagseguro::Config[:ps_verification_url]
+          pagseguro_url = Spree::Pagseguro::Config[:verification_url]
         end
 
         payload = raw
