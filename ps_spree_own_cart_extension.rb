@@ -30,6 +30,19 @@ class PsSpreeOwnCartExtension < Spree::Extension
 #      end
 #    end
 
+    OrdersController.class_eval do
+      edit.before {
+        if Spree::Pagseguro::Config[:always_use_sandbox]
+          @pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
+        elsif RAILS_ENV == 'development'
+          @pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
+        else
+          @pagseguro_url = Spree::Pagseguro::Config[:billing_url]
+        end
+        @order.edit!
+      }
+    end
+
     # add new events and states to the FSM
     fsm = Order.state_machines['state']  
     fsm.events["fail_payment"] = PluginAWeek::StateMachine::Event.new(fsm, "fail_payment")

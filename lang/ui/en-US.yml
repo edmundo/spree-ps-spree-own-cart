@@ -3,3 +3,4 @@ ext_ps_spree_own_cart_description: Support for brazilian online payment service 
 pagseguro_setting: PagSeguro Settings
 always_use_sandbox: Always use the sandbox
 pagseguro_account: PagSeguro account
+token: Token

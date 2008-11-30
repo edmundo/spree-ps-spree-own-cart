@@ -1,14 +1,4 @@
-<%
-if Spree::Pagseguro::Config[:always_use_sandbox]
-  pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
-elsif RAILS_ENV == 'development'
-  pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
-else
-  pagseguro_url = Spree::Pagseguro::Config[:billing_url]
-end
-%>
-
-<form target="pagseguro" action="<%= pagseguro_url %>" method="post">
+<form target="pagseguro" action="<%= @pagseguro_url %>" method="post">
 
 <input type="hidden" name="email_cobranca" value="<%= truncate(h(Spree::Pagseguro::Config[:account]), 200) %>" />
 <input type="hidden" name="tipo" value="CP" />
