@@ -1,0 +1,93 @@
+<h1>Pagamento processado.</h1>
+
+Recebidos:
+<pre>
+<%= "email_cobranca=#{params[:email_cobranca]}" if params[:email_cobranca] %>
+<%= "tipo=#{params[:tipo]}" if params[:tipo] %>
+<%= "moeda=#{params[:moeda]}" if params[:moeda] %>
+
+<%= "cliente_nome=#{params[:cliente_nome]}" if params[:cliente_nome] %>
+<%= "cliente_cep=#{params[:cliente_cep]}" if params[:cliente_cep] %>
+<%= "cliente_end=#{params[:cliente_end]}" if params[:cliente_end] %>
+<%= "cliente_num=#{params[:cliente_num]}" if params[:cliente_num] %>
+<%= "cliente_compl=#{params[:cliente_compl]}" if params[:cliente_compl] %>
+<%= "cliente_bairro=#{params[:cliente_bairro]}" if params[:cliente_bairro] %>
+<%= "cliente_cidade=#{params[:cliente_cidade]}" if params[:cliente_cidade] %>
+<%= "cliente_uf=#{params[:cliente_uf]}" if params[:cliente_uf] %>
+<%= "cliente_pais=#{params[:cliente_pais]}" if params[:cliente_pais] %>
+<%= "cliente_ddd=#{params[:cliente_ddd]}" if params[:cliente_ddd] %>
+<%= "cliente_tel=#{params[:cliente_tel]}" if params[:cliente_tel] %>
+<%= "cliente_email=#{params[:cliente_email]}" if params[:cliente_email] %>
+
+<!-- Pagseguro only accepts 25 items anyway. -->
+<% (1..25).to_a.each do |i| -%>
+  <% [
+       "item_id_#{i}",
+       "item_descr_#{i}",
+       "item_quant_#{i}",
+       "item_valor_#{i}",
+       "item_frete_#{i}",
+       "item_peso_#{i}"
+     ].each do |item| -%>
+    <%= "#{item}=#{params[item.to_sym]}" if params[item.to_sym] -%>
+  <% end -%>
+<% end -%>
+
+<%= "tipo_frete=#{params[:tipo_frete]}" if params[:tipo_frete] %>
+<%= "ref_transacao=#{params[:ref_transacao]}" if params[:ref_transacao] %>
+</pre>
+
+
+<form target="_blank" action="http://localhost:3000/pagseguro_payments/notification" method="post">
+
+<input name="VendedorEmail" value="<%= params[:email_cobranca] %>" type="hidden" />
+<input name="TransacaoID" value="<%= @transaction_id %>" type="hidden" />
+<input name="Referencia" value="<%= params[:ref_transacao] %>" type="hidden" />
+<input name="TipoFrete" value="<%= params[:tipo] %>" type="hidden" />
+<input name="ValorFrete" value="0,00" type="hidden" />
+<input name="Anotacao" value="Pagamento gerado pelo ambiente de testes" type="hidden" />
+<input name="DataTransacao" value="29/11/2008 22:41:39" type="hidden" />
+
+<label>TipoPagamento:
+  <select name="TipoPagamento">
+    <option value="Pagamento">Pagamento</option>
+    <option value="Cartão de Crédito">Cartão de Crédito</option>
+    <option value="Boleto">Boleto</option>
+    <option value="Pagamento Online">Pagamento Online</option>
+  </select>
+</label><br/>
+
+<label>StatusTransacao:
+  <select name="StatusTransacao">
+    <option value="Completo">Completo</option>
+    <option value="Aguardando Pagto">Aguardando Pagto</option>
+    <option value="Aprovado">Aprovado</option>
+    <option value="Em Análise">Em Análise</option>
+    <option value="Cancelado">Cancelado</option>
+  </select>
+</label><br/>
+
+<input name="CliNome" value="nome" type="hidden" />
+<input name="CliEmail" value="email" type="hidden" />
+<input name="CliEndereco" value="Rua dos Bobos" type="hidden" />
+<input name="CliNumero" value="0" type="hidden" />
+<input name="CliComplemento" value="" type="hidden" />
+<input name="CliBairro" value="Paytown" type="hidden" />
+<input name="CliCidade" value="Payland" type="hidden" />
+<input name="CliEstado" value="AC" type="hidden" />
+<input name="CliCEP" value="01234567" type="hidden" />
+<input name="CliTelefone" value="99 55555555" type="hidden" />
+
+<input name="ProdId_1" value="ROR-00013" type="hidden" />
+<input name="ProdDescricao_1" value="Ruby on Rails Jr. Spaghetti" type="hidden" />
+<input name="ProdValor_1" value="0,19" type="hidden" />
+<input name="ProdQuantidade_1" value="2" type="hidden" />
+<input name="ProdFrete_1" value="0,00" type="hidden" />
+<input name="ProdExtras_1" value="0,00" type="hidden" />
+
+<input name="NumItens" value="1" type="hidden" />
+
+<input type="submit" value="Testar Retorno Automático" />
+</form>
+
+<a href="http://localhost:3000/pagseguro_payments/notification">Testar link de retorno para a loja</a>
