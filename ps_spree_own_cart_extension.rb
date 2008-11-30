@@ -32,9 +32,7 @@ class PsSpreeOwnCartExtension < Spree::Extension
 
     OrdersController.class_eval do
       edit.before {
-        if Spree::Pagseguro::Config[:always_use_sandbox]
-          @pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
-        elsif RAILS_ENV == 'development'
+        if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
           @pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
         else
           @pagseguro_url = Spree::Pagseguro::Config[:billing_url]

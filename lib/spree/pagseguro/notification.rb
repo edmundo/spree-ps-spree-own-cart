@@ -11,30 +11,24 @@ module Spree #:nodoc:
       # set this to an array in the subclass, to specify which IPs are allowed to send requests
       class_inheritable_accessor :production_ips
 
+      # Define some methods dynamically.
+      (1..25).to_a.each do |i|
+        [
+          ["prod_id_#{i}", "ProdId_#{i}"],
+          ["prod_description_#{i}", "ProdDescricao_#{i}"],
+          ["prod_quantity_#{i}", "ProdQuantidade_#{i}"]
+        ].each do |item|
+          define_method(item[0]) { params[item[1]] }
+        end
+        define_method("prod_price_#{i}") { params["ProdValor_#{i}"].gsub(/\D/,'').to_f / 100 }
+        define_method("prod_shipping_price_#{i}") { params["ProdFrete_#{i}"].gsub(/\D/,'').to_f / 100 }
+        define_method("prod_extras_#{i}") { params["ProdExtras_#{i}"].gsub(/\D/,'').to_f / 100 }
+      end
+
       def initialize(post, options = {})
         @options = options
         empty!
         parse(post)
-      end
-
-      def status
-        raise NotImplementedError, "Must implement this method in the subclass"
-      end
-
-      # the money amount we received in X.2 decimal.
-      def gross
-        raise NotImplementedError, "Must implement this method in the subclass"
-      end
-
-      def gross_cents
-        (gross.to_f * 100.0).round
-      end
-
-      # This combines the gross and currency and returns a proper Money object. 
-      # this requires the money library located at http://dist.leetsoft.com/api/money
-      def amount
-        return Money.new(gross_cents, currency) rescue ArgumentError
-        return Money.new(gross_cents) # maybe you have an own money object which doesn't take a currency?
       end
 
       # reset the notification. 
@@ -43,77 +37,88 @@ module Spree #:nodoc:
         @raw     = ""      
       end
       
-#      # Check if the request comes from an official IP
-#      def valid_sender?(ip)
-#        return true if ActiveMerchant::Billing::Base.integration_mode == :test || production_ips.blank?
-#        production_ips.include?(ip)
-#      end
-      
-
-      
-      #######################
-
-#      t.string :client_name
-#      t.string :client_email
-#      t.string :client_adress1
-#      t.string :client_number
-#      t.string :client_adress2
-#      t.string :client_bairro
-#      t.string :client_city
-#      t.string :client_state
-#      t.string :client_zip
-#      t.string :client_phone
-
       def seller_email
         params['VendedorEmail']
-      end
-
-      def reference
-        params['Referencia']
       end
 
       def transaction_id
         params['TransacaoID']
       end
 
-      def transaction_status
-        params['StatusTransacao']
+      def reference
+        params['Referencia']
       end
 
-      def client_email
-        params['CliEmail']
-      end
-      
       def shipping_type
         params['TipoFrete']
       end
 
       def shipping_price
-        params['ValorFrete'].to_d
+        params['ValorFrete'].gsub(/\D/,'').to_f / 100
       end
       
-      def complete?
-        status == "Completo"
+      def notes
+        params['Anotacao']
       end
 
       def received_at
         params['DataTransacao']
       end
 
-      def extra
-        params['X']
-      end
-
-      def notes
-        params['Anotacao']
-      end
-
       def payment_type
         params['TipoPagamento']
       end
 
+      def transaction_status
+        params['StatusTransacao']
+      end
+
+      def client_name
+        params['CliNome']
+      end
+
+      def client_email
+        params['CliEmail']
+      end
+
+      def client_adress1
+        params['CliEndereco']
+      end
+
+      def client_number
+        params['CliNumero']
+      end
+
+      def client_adress2
+        params['CliComplemento']
+      end
+
+      def client_borough
+        params['CliBairro']
+      end
+
+      def client_city
+        params['CliCidade']
+      end
+
+      def client_state
+        params['CliEstado']
+      end
+
+      def client_zip
+        params['CliCEP']
+      end
+
+      def client_phone
+        params['CliTelefone']
+      end
+      
+      def complete?
+        transaction_status == "Completo"
+      end
+
       def number_of_items
-        params['NumItems']
+        params['NumItens']
       end
 
       # Acknowledge the transaction to paypal. This method has to be called after a new 
@@ -131,9 +136,7 @@ module Spree #:nodoc:
       #       ... log possible hacking attempt ...
       #     end
       def acknowledge(token)
-        if Spree::Pagseguro::Config[:always_use_sandbox]
-          pagseguro_url = Spree::Pagseguro::Config[:sandbox_verification_url]
-        elsif RAILS_ENV == 'development'
+        if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
           pagseguro_url = Spree::Pagseguro::Config[:sandbox_verification_url]
         else
           pagseguro_url = Spree::Pagseguro::Config[:verification_url]
@@ -142,7 +145,11 @@ module Spree #:nodoc:
         payload = raw
 
         new_payload = "Comando=validar&Token=#{token}&" + payload
-        response = ssl_post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
+        if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
+          response = ssl_post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
+        else
+          response = ssl_post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
+        end
         
         raise StandardError.new("Faulty pagseguro result: #{response}") unless ["VERIFICADO", "FALSO"].include?(response)
 

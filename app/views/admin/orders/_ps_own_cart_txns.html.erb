@@ -4,18 +4,24 @@
 
   <table class="basic-table">
     <tr>
-      <th><%= t("Amount") %></th>
-      <th><%= t("Fee") %></th>
-      <th><%= t("Status") %></th>
       <th><%= t("Transaction Id") %></th>
+
+      <th><%= t("Items Price") %></th>
+      <th><%= t("Items Shipping Price") %></th>
+      <th><%= t("Items Extras") %></th>
+      <th><%= t("Notes") %></th>
+
+      <th><%= t("Transaction Status") %></th>
       <th><%= t("Received At") %></th>
     </tr>
     <% @order.pagseguro_payment.txns.each do |t| %>
       <tr>
-        <td><%=number_to_currency t.amount %></td>
-        <td><%=number_to_currency t.fee %></td>
-        <td><%=t.status %></td>
         <td><%=t.transaction_id %></td>
+        <td><%=number_to_currency t.items_price %></td>
+        <td><%=number_to_currency t.items_shipping_price %></td>
+        <td><%=number_to_currency t.items_extras %></td>
+        <td><%=t.notes %></td>
+        <td><%=t.transaction_status %></td>
         <td><%=t.received_at %></td>
       </tr>
     <% end %>

@@ -19,16 +19,9 @@ Recebidos:
 <%= "cliente_tel=#{params[:cliente_tel]}" if params[:cliente_tel] %>
 <%= "cliente_email=#{params[:cliente_email]}" if params[:cliente_email] %>
 
-<!-- Pagseguro only accepts 25 items anyway. -->
-<% (1..25).to_a.each do |i| -%>
-  <% [
-       "item_id_#{i}",
-       "item_descr_#{i}",
-       "item_quant_#{i}",
-       "item_valor_#{i}",
-       "item_frete_#{i}",
-       "item_peso_#{i}"
-     ].each do |item| -%>
+<% (1..@number_of_items).to_a.each do |i| -%>
+  <% ["item_id_#{i}", "item_descr_#{i}", "item_quant_#{i}", "item_valor_#{i}", "item_frete_#{i}",
+      "item_peso_#{i}"].each do |item| -%>
     <%= "#{item}=#{params[item.to_sym]}" if params[item.to_sym] -%>
   <% end -%>
 <% end -%>
@@ -67,25 +60,32 @@ Recebidos:
   </select>
 </label><br/>
 
-<input name="CliNome" value="nome" type="hidden" />
-<input name="CliEmail" value="email" type="hidden" />
-<input name="CliEndereco" value="Rua dos Bobos" type="hidden" />
-<input name="CliNumero" value="0" type="hidden" />
-<input name="CliComplemento" value="" type="hidden" />
-<input name="CliBairro" value="Paytown" type="hidden" />
-<input name="CliCidade" value="Payland" type="hidden" />
-<input name="CliEstado" value="AC" type="hidden" />
-<input name="CliCEP" value="01234567" type="hidden" />
-<input name="CliTelefone" value="99 55555555" type="hidden" />
+<input name="CliNome" value="<%= params[:cliente_nome] %>" type="hidden" />
+<input name="CliEmail" value="<%= params[:cliente_email] %>" type="hidden" />
+<input name="CliEndereco" value="<%= params[:cliente_end] %>" type="hidden" />
+<input name="CliNumero" value="<%= params[:cliente_num] %>" type="hidden" />
+<input name="CliComplemento" value="<%= params[:cliente_compl] %>" type="hidden" />
+<input name="CliBairro" value="<%= params[:cliente_bairro] %>" type="hidden" />
+<input name="CliCidade" value="<%= params[:cliente_cidade] %>" type="hidden" />
+<input name="CliEstado" value="<%= params[:cliente_uf] %>" type="hidden" />
+<input name="CliCEP" value="<%= params[:cliente_cep] %>" type="hidden" />
+<input name="CliTelefone" value="<%= params[:cliente_ddd] %> <%= params[:cliente_tel] %>" type="hidden" />
 
-<input name="ProdId_1" value="ROR-00013" type="hidden" />
-<input name="ProdDescricao_1" value="Ruby on Rails Jr. Spaghetti" type="hidden" />
-<input name="ProdValor_1" value="0,19" type="hidden" />
-<input name="ProdQuantidade_1" value="2" type="hidden" />
-<input name="ProdFrete_1" value="0,00" type="hidden" />
-<input name="ProdExtras_1" value="0,00" type="hidden" />
+<% (1..@number_of_items).to_a.each do |i| -%>
+  <% [
+    ["item_id_#{i}", "ProdId_#{i}"],
+    ["item_descr_#{i}", "ProdDescricao_#{i}"],
+    ["item_quant_#{i}", "ProdQuantidade_#{i}"],
+    ["item_frete_#{i}", "ProdFrete_#{i}"]
+  ].each do |item| -%>
+    <input name="<%= item[1] %>" value="<%= params[item[0].to_sym] %>" type="hidden" />
+  <% end -%>
+    <% valor = params["item_valor_#{i}".to_sym].to_f / 100 %>
+    <input name="<%= "ProdValor_#{i}" %>" value="<%= number_to_currency(valor, :unit => '').to_s %>" type="hidden" />
+    <input name="<%= "ProdExtras_#{i}" %>" value="0,00" type="hidden" />
+<% end -%>
 
-<input name="NumItens" value="1" type="hidden" />
+<input name="NumItens" value="<%= @number_of_items %>" type="hidden" />
 
 <input type="submit" value="Testar Retorno Automático" />
 </form>

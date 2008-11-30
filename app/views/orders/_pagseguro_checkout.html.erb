@@ -30,7 +30,7 @@ Obs.: Máximo de 25 items.
   <input type="hidden" name="item_id_<%= index + 1 %>" value="<%= truncate(h(item.variant.product.sku), 100) %>" />
   <input type="hidden" name="item_descr_<%= index + 1 %>" value="<%= truncate(h(item.variant.product.name), 100) %>" />
   <input type="hidden" name="item_quant_<%= index + 1 %>" value="<%= truncate(h(item.quantity.to_s), 3) %>" />
-  <input type="hidden" name="item_valor_<%= index + 1 %>" value="<%= truncate(h(item.price.to_s), 7) %>" />
+  <input type="hidden" name="item_valor_<%= index + 1 %>" value="<%= truncate(h((item.price*100).to_i.to_s), 7) %>" />
 <% end %>
 
 

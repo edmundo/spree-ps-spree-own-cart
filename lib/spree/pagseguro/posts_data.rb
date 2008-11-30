@@ -36,7 +36,7 @@ module Spree #:nodoc:
       # Ruby 1.8.4 doesn't automatically set this header
       headers['Content-Type'] ||= "application/x-www-form-urlencoded"
       
-      uri   = URI.parse(url)
+      uri = URI.parse(url)
 
       http = Net::HTTP.new(uri.host, uri.port) 
       http.open_timeout = self.class.open_timeout
@@ -76,6 +76,29 @@ module Spree #:nodoc:
       end
     end    
     
+    def post(url, data, headers = {})
+      # Ruby 1.8.4 doesn't automatically set this header
+      #headers['Content-Type'] ||= "application/x-www-form-urlencoded"
+      
+      uri = URI.parse(url)
+
+      Net::HTTP.post_form(uri, data).body
+
+#      retry_exceptions do 
+#        begin
+#          http.post(uri.request_uri, data, headers).body
+#        rescue EOFError => e
+#          raise ConnectionError, "The remote server dropped the connection"
+#        rescue Errno::ECONNRESET => e
+#          raise ConnectionError, "The remote server reset the connection"
+#        rescue Errno::ECONNREFUSED => e
+#          raise RetriableConnectionError, "The remote server refused the connection"
+#        rescue Timeout::Error, Errno::ETIMEDOUT => e
+#          raise ConnectionError, "The connection to the remote server timed out"
+#        end
+#      end
+    end    
+
     def retry_exceptions
       retries = MAX_RETRIES
       begin
