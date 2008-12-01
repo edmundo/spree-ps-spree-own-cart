@@ -14,8 +14,7 @@ class PagseguroConfiguration < Configuration
   preference :account, :string, :default => "your_account@example.com"
   # always use the sandbox even when in production
   preference :always_use_sandbox, :boolean, :default => false
-  #preference :ipn_notify_host, :string, :default => "http://localhost:3000"
-  #preference :success_url, :string, :default => "http://localhost:3000/checkout/success"
+
   # security token
   preference :token, :string, :default => "C3671EA724CC82A3D9AB2D4F887B61F2"
   
