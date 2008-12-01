@@ -20,10 +20,10 @@ Recebidos:
 <%= "cliente_email=#{params[:cliente_email]}" if params[:cliente_email] %>
 
 <% (1..@number_of_items).to_a.each do |i| -%>
-  <% ["item_id_#{i}", "item_descr_#{i}", "item_quant_#{i}", "item_valor_#{i}", "item_frete_#{i}",
-      "item_peso_#{i}"].each do |item| -%>
-    <%= "#{item}=#{params[item.to_sym]}" if params[item.to_sym] -%>
-  <% end -%>
+<% ["item_id_#{i}", "item_descr_#{i}", "item_quant_#{i}", "item_valor_#{i}", "item_frete_#{i}",
+"item_peso_#{i}"].each do |item| -%>
+<%= "#{item}=#{params[item.to_sym]}" if params[item.to_sym] %>
+<% end -%>
 <% end -%>
 
 <%= "tipo_frete=#{params[:tipo_frete]}" if params[:tipo_frete] %>

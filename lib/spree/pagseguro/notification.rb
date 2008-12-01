@@ -146,11 +146,10 @@ module Spree #:nodoc:
 
         new_payload = "Comando=validar&Token=#{token}&" + payload
         if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
-          response = ssl_post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
+          response = post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
         else
           response = ssl_post(pagseguro_url, new_payload, 'Content-Length' => "#{new_payload.size}")
         end
-        
         raise StandardError.new("Faulty pagseguro result: #{response}") unless ["VERIFICADO", "FALSO"].include?(response)
 
         response == "VERIFICADO"

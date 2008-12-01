@@ -94,37 +94,46 @@ class PagseguroPaymentsController < Spree::BaseController
           logger.info("Received an unexpected status for order: #{refered_order.number}")
         end
       else
-        logger.info("Unexpected verification error, received #{verification_status}.")
+        logger.info("Unexpected verification response received.")
       end
-
+      
+      # In tests clean the session 
+      if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
+        clean_session_information
+      end
+      
       # Don't render anything for a notification.
       render :nothing => true
     else # notification.raw empty
       # Its an user.
-
-      # As we are not executing the checkout method on order controller we need to update
-      # some properties here. 
-      if session[:order_id]
-        session_order = Order.find(session[:order_id])
-        session_order.update_attribute("ip_address", request.env['REMOTE_ADDR'] || "unknown")
-        session_order.update_attribute("checkout_complete", true) 
-        # remove order from the session (its not really practical to allow the user to edit the session anymore)
-        session[:order_id] = nil
-
-        if logged_in?
-          session_order.update_attribute("user", current_user)
-          #redirect_to order_url(session_order)
-        else
-        puts "I am here3"
-          flash[:notice] = "Please create an account or login so we can associate this order with an account"
-          #session[:return_to] = "#{order_url(session_order)}"
-          redirect_to signup_path
-        end
-      end
+      clean_session_information
 
       # Here we must show the response page.
     end # is_robot
 
   end # notification
+  
+  private
+  
+  def clean_session_information
+    # As we are not executing the checkout method on order controller we need to update
+    # some properties here. 
+    if session[:order_id]
+      session_order = Order.find(session[:order_id])
+      session_order.update_attribute("ip_address", request.env['REMOTE_ADDR'] || "unknown")
+      session_order.update_attribute("checkout_complete", true) 
+      # remove order from the session (its not really practical to allow the user to edit the session anymore)
+      session[:order_id] = nil
+
+      if logged_in?
+        session_order.update_attribute("user", current_user)
+        #redirect_to order_url(session_order)
+      else
+        flash[:notice] = "Please create an account or login so we can associate this order with an account"
+        #session[:return_to] = "#{order_url(session_order)}"
+        redirect_to signup_path
+      end
+    end
+  end
 
 end

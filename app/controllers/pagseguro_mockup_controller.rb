@@ -21,7 +21,7 @@ class PagseguroMockupController < Spree::BaseController
   
   # Mocks https://pagseguro.uol.com.br/security/npi/default.aspx
   def default
-    if params[:token] == Spree::Pagseguro::Config[:token]
+    if params[:Token] == Spree::Pagseguro::Config[:token]
       render :text => "VERIFICADO"
     else
       render :text => "FALSO"
