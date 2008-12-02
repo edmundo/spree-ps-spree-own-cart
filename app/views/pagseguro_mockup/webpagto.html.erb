@@ -1,35 +1,5 @@
-<h1>Pagamento processado.</h1>
-
-Recebidos:
-<pre>
-<%= "email_cobranca=#{params[:email_cobranca]}" if params[:email_cobranca] %>
-<%= "tipo=#{params[:tipo]}" if params[:tipo] %>
-<%= "moeda=#{params[:moeda]}" if params[:moeda] %>
-
-<%= "cliente_nome=#{params[:cliente_nome]}" if params[:cliente_nome] %>
-<%= "cliente_cep=#{params[:cliente_cep]}" if params[:cliente_cep] %>
-<%= "cliente_end=#{params[:cliente_end]}" if params[:cliente_end] %>
-<%= "cliente_num=#{params[:cliente_num]}" if params[:cliente_num] %>
-<%= "cliente_compl=#{params[:cliente_compl]}" if params[:cliente_compl] %>
-<%= "cliente_bairro=#{params[:cliente_bairro]}" if params[:cliente_bairro] %>
-<%= "cliente_cidade=#{params[:cliente_cidade]}" if params[:cliente_cidade] %>
-<%= "cliente_uf=#{params[:cliente_uf]}" if params[:cliente_uf] %>
-<%= "cliente_pais=#{params[:cliente_pais]}" if params[:cliente_pais] %>
-<%= "cliente_ddd=#{params[:cliente_ddd]}" if params[:cliente_ddd] %>
-<%= "cliente_tel=#{params[:cliente_tel]}" if params[:cliente_tel] %>
-<%= "cliente_email=#{params[:cliente_email]}" if params[:cliente_email] %>
-
-<% (1..@number_of_items).to_a.each do |i| -%>
-<% ["item_id_#{i}", "item_descr_#{i}", "item_quant_#{i}", "item_valor_#{i}", "item_frete_#{i}",
-"item_peso_#{i}"].each do |item| -%>
-<%= "#{item}=#{params[item.to_sym]}" if params[item.to_sym] %>
-<% end -%>
-<% end -%>
-
-<%= "tipo_frete=#{params[:tipo_frete]}" if params[:tipo_frete] %>
-<%= "ref_transacao=#{params[:ref_transacao]}" if params[:ref_transacao] %>
-</pre>
-
+<center>
+<h1>Pagamento Processado</h1>
 
 <form target="_blank" action="http://localhost:3000/pagseguro_payments/notification" method="post">
 
@@ -41,6 +11,10 @@ Recebidos:
 <input name="Anotacao" value="Pagamento gerado pelo ambiente de testes" type="hidden" />
 <input name="DataTransacao" value="29/11/2008 22:41:39" type="hidden" />
 
+<table>
+  <tr>
+    <td style="vertical-align: top; padding: 10px;">
+
 <label>TipoPagamento:
   <select name="TipoPagamento">
     <option value="Pagamento">Pagamento</option>
@@ -48,8 +22,11 @@ Recebidos:
     <option value="Boleto">Boleto</option>
     <option value="Pagamento Online">Pagamento Online</option>
   </select>
-</label><br/>
+</label>
 
+    </td>
+    <td style="vertical-align: top; padding: 10px;">
+      
 <label>StatusTransacao:
   <select name="StatusTransacao">
     <option value="Completo">Completo</option>
@@ -58,7 +35,13 @@ Recebidos:
     <option value="Em Análise">Em Análise</option>
     <option value="Cancelado">Cancelado</option>
   </select>
-</label><br/>
+</label>
+
+    </td>
+  </tr>
+</table>
+
+<br/>
 
 <input name="CliNome" value="<%= params[:cliente_nome] %>" type="hidden" />
 <input name="CliEmail" value="<%= params[:cliente_email] %>" type="hidden" />
@@ -89,5 +72,52 @@ Recebidos:
 
 <input type="submit" value="Testar Retorno Automático" />
 </form>
+<br/>
 
 <a href="http://localhost:3000/pagseguro_payments/notification">Testar link de retorno para a loja</a>
+
+<br/><br/>
+
+Recebidos:
+<table>
+  <tr>
+    <td style="vertical-align: top; padding: 10px;">
+
+<pre>
+<%= "email_cobranca=#{params[:email_cobranca]}" if params[:email_cobranca] %>
+<%= "tipo=#{params[:tipo]}" if params[:tipo] %>
+<%= "moeda=#{params[:moeda]}" if params[:moeda] %>
+<%= "tipo_frete=#{params[:tipo_frete]}" if params[:tipo_frete] %>
+<%= "ref_transacao=#{params[:ref_transacao]}" if params[:ref_transacao] %>
+      
+<%= "cliente_nome=#{params[:cliente_nome]}" if params[:cliente_nome] %>
+<%= "cliente_cep=#{params[:cliente_cep]}" if params[:cliente_cep] %>
+<%= "cliente_end=#{params[:cliente_end]}" if params[:cliente_end] %>
+<%= "cliente_num=#{params[:cliente_num]}" if params[:cliente_num] %>
+<%= "cliente_compl=#{params[:cliente_compl]}" if params[:cliente_compl] %>
+<%= "cliente_bairro=#{params[:cliente_bairro]}" if params[:cliente_bairro] %>
+<%= "cliente_cidade=#{params[:cliente_cidade]}" if params[:cliente_cidade] %>
+<%= "cliente_uf=#{params[:cliente_uf]}" if params[:cliente_uf] %>
+<%= "cliente_pais=#{params[:cliente_pais]}" if params[:cliente_pais] %>
+<%= "cliente_ddd=#{params[:cliente_ddd]}" if params[:cliente_ddd] %>
+<%= "cliente_tel=#{params[:cliente_tel]}" if params[:cliente_tel] %>
+<%= "cliente_email=#{params[:cliente_email]}" if params[:cliente_email] %>
+</pre>
+
+    </td>
+    <td style="vertical-align: top; padding: 10px;">
+      
+<pre>
+<% (1..@number_of_items).to_a.each do |i| -%>
+<% ["item_id_#{i}", "item_descr_#{i}", "item_quant_#{i}", "item_valor_#{i}", "item_frete_#{i}",
+"item_peso_#{i}"].each do |item| -%>
+<%= "#{item}=#{params[item.to_sym]}" if params[item.to_sym] %>
+<% end -%>
+<% end -%>
+</pre>
+
+    </td>
+  </tr>
+</table>
+
+</center>
