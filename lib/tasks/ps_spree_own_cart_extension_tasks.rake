@@ -1,18 +1,7 @@
-namespace :db do
-  desc "Bootstrap your database for Spree."
-  task :bootstrap  => :environment do
-    # load initial database fixtures (in db/sample/*.yml) into the current environment's database
-    ActiveRecord::Base.establish_connection(RAILS_ENV.to_sym)
-    Dir.glob(File.join(PsSpreeOwnCartExtension.root, "db", 'sample', '*.{yml,csv}')).each do |fixture_file|
-      Fixtures.create_fixtures("#{PsSpreeOwnCartExtension.root}/db/sample", File.basename(fixture_file, '.*'))
-    end
-
-  end
-end
-
 namespace :spree do
   namespace :extensions do
     namespace :ps_spree_own_cart do
+
       desc "Copies public assets of the Ps Spree Own Cart to the instance public/ directory."
       task :update => :environment do
         is_svn_or_dir = proc {|path| path =~ /\.svn/ || File.directory?(path) }
@@ -24,6 +13,7 @@ namespace :spree do
           cp file, RAILS_ROOT + path
         end
       end  
+
     end
   end
 end
