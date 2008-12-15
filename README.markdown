@@ -28,15 +28,13 @@ Ao Gregg Pollack por ter publicado a extensão pp_website_standard e ter me poup
 ## Diagramas de Estado (ilustrando as mudanças efetuadas)
 Original
 <br/><br/>
-<a href="i498.photobucket.com/albums/rr350/edmundo_vn/original_states_100.png">
+<a href="http://i498.photobucket.com/albums/rr350/edmundo_vn/original_states_100.png">
   <img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/original_states_30.png" style="border: 1px solid #CCC;" />
 </a>
 
-<br/>
-
 Alterado
 <br/><br/>
-<a href="i498.photobucket.com/albums/rr350/edmundo_vn/pagseguro_states_100.png">
+<a href="http://i498.photobucket.com/albums/rr350/edmundo_vn/pagseguro_states_100.png">
   <img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/pagseguro_states_30.png" style="border: 1px solid #CCC;" />
 </a>
 
