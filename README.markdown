@@ -25,22 +25,14 @@ O sistema tem algumas ações que respondem com respostas pré-definidas imitand
 ## Agradecimentos
 Ao Gregg Pollack por ter publicado a extensão pp_website_standard e ter me poupado bastante trabalho.
 
----
-
 ## Diagramas de Estado (ilustrando as mudanças efetuadas)
-
-<table>
-  <tr>
-    <td style="vertical-align: top; text-align: center;">
-
 Original
 <br/><br/>
 <a href="i498.photobucket.com/albums/rr350/edmundo_vn/original_states_100.png">
   <img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/original_states_30.png" style="border: 1px solid #CCC;" />
 </a>
 
-    </td>
-    <td style="vertical-align: top; text-align: center;">
+<br/>
 
 Alterado
 <br/><br/>
@@ -48,6 +40,3 @@ Alterado
   <img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/pagseguro_states_30.png" style="border: 1px solid #CCC;" />
 </a>
 
-    </td>
-  </tr>
-</table>
