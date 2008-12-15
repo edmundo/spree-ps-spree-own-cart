@@ -88,10 +88,18 @@ class PagseguroPaymentsController < Spree::BaseController
       if notification.acknowledge(Spree::Pagseguro::Config[:token])
         case notification.transaction_status
         when "Completo"
-          refered_order.pay!
+          refered_order.pagseguro_payment.complete_payment!
+        when "Aguardando Pagto"
+          refered_order.pagseguro_payment.wait_for_payment!
+        when "Aprovado"
+          refered_order.pagseguro_payment.approve_payment!
+        when "Em Análise"
+          refered_order.pagseguro_payment.analyze_payment!
+        when "Cancelado"
+          refered_order.pagseguro_payment.cancel_payment!
         else
-          refered_order.fail_payment!
-          logger.info("Received an unexpected status for order: #{refered_order.number}")
+          refered_order.pagseguro_payment.cancel_payment!
+          logger.info("Received an unexpected status (#{notification.transaction_status}) for order: #{refered_order.number}")
         end
       else
         logger.info("Unexpected verification response received.")
@@ -108,6 +116,7 @@ class PagseguroPaymentsController < Spree::BaseController
       # Its an user.
       clean_session_information
 
+      refered_order.wait_for_payment_response!
       # Here we must show the response page.
     end # is_robot
 

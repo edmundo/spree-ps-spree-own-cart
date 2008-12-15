@@ -11,6 +11,7 @@ class PsSpreeOwnCartExtension < Spree::Extension
     # Add a partial for PagSeguro Payment txns
     Admin::OrdersController.class_eval do
       before_filter :add_ps_own_cart_txns, :only => :show
+      
       def add_ps_own_cart_txns
         @txn_partials << 'ps_own_cart_txns'
       end
@@ -31,35 +32,106 @@ class PsSpreeOwnCartExtension < Spree::Extension
 #    end
 
     OrdersController.class_eval do
-      edit.before {
-        if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
-          @pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
-        else
-          @pagseguro_url = Spree::Pagseguro::Config[:billing_url]
+      include Spree::Pagseguro::PostsData
+
+      before_filter :load_object, :only => [:checkout, :confirmation, :transmit]
+      skip_before_filter :verify_authenticity_token, :only => [:transmit]
+
+      def confirmation
+        # Mark the order as "ready to transmit"
+        if @order.state == "shipment"
+          @order.next!
         end
-        @order.edit!
-      }
+      end
+
+      def transmit
+        if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
+          pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
+        else
+          pagseguro_url = Spree::Pagseguro::Config[:billing_url]
+        end
+
+        # Mark the order as waiting for payment response if it was ready to transmit
+        if @order.state == "ready_to_transmit"
+          @order.wait_for_payment_response!
+        end
+
+        payload = Spree::Pagseguro::CheckoutData.data_to_send(@order)
+        
+        RAILS_DEFAULT_LOGGER.info "XXXXXXXX #{payload}"
+        
+              
+        # If we are waiting for payment response the checkout is complete
+        if object.checkout_complete
+          # Transmit the form to PagSeguro
+          if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
+            response = post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
+          else
+            response = ssl_post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
+          end
+
+          RAILS_DEFAULT_LOGGER.info "XXXXXXXX #{response}"
+          render :inline => response
+          
+          # remove the order from the session
+          #session[:order_id] = nil
+          #redirect_to object_url and return
+        else
+          # note: controllers participating in checkout process are responsible for calling Order#next! 
+          next_url = self.send("new_order_#{object.state}_url", @order)
+          redirect_to next_url
+        end
+      end
     end
 
-    # add new events and states to the FSM
-    fsm = Order.state_machines['state']  
-    fsm.events["fail_payment"] = PluginAWeek::StateMachine::Event.new(fsm, "fail_payment")
-    fsm.events["fail_payment"].transition(:to => 'payment_failure', :from => ['in_progress', 'payment_pending'])
 
-    fsm.events["pend_payment"] = PluginAWeek::StateMachine::Event.new(fsm, "pend_payment")
-    fsm.events["pend_payment"].transition(:to => 'payment_pending', :from => 'in_progress')    
-    fsm.after_transition :to => 'payment_pending', :do => lambda {|order| order.update_attribute(:checkout_complete, true)}  
+    # Modify the transitions in core.
+    fsm = Order.state_machines['state']
 
-    fsm.events["pay"] = PluginAWeek::StateMachine::Event.new(fsm, "pay")
-    fsm.events["pay"].transition(:to => 'paid', :from => ['payment_pending', 'in_progress'])
-    fsm.after_transition :to => 'paid', :do => :complete_order  
+    # Delete transitions that should not be used.
+    fsm.events['next'].transitions.delete_if { |t| t.options[:to] == "creditcard_payment" && t.options[:from] == "shipment" }
+    fsm.events['previous'].transitions.delete_if { |t| t.options[:to] == "shipment" && t.options[:from] == "creditcard_payment" }
+    fsm.events['next'].transitions.delete_if { |t| t.options[:to] == "authorized" && t.options[:from] == "creditcard_payment" }
+    fsm.events['edit'].transitions.delete_if { |t| t.options[:to] == "in_progress" && t.options[:from] == "creditcard_payment" }
+    fsm.events['capture'].transitions.delete_if { |t| t.options[:to] == "captured" && t.options[:from] == "authorized" }
+    fsm.events['ship'].transitions.delete_if { |t| t.options[:to] == "shipped" && t.options[:from] == "captured" }
 
-    fsm.events["ship"].transition(:to => 'shipped', :from => 'paid')
-    
+    # Delete states that should not be used.
+    fsm.states.delete('creditcard_payment')
+    fsm.states.delete('authorized')
+    fsm.states.delete('captured')
+
     # add a PagSeguroPayment association to the Order model
-    Order.class_eval do 
+    Order.class_eval do
       has_one :pagseguro_payment
+
+      fsm.event :next do
+        transition :to => 'ready_to_transmit', :from => 'shipment'
+      end
+  
+      fsm.event :previous do
+        transition :to => 'shipment', :from => 'ready_to_transmit'
+      end
+  
+      fsm.event :edit do
+        transition :to => 'in_progress', :from => 'ready_to_transmit'
+      end
+  
+      fsm.event :wait_for_payment_response do
+        transition :to => 'waiting_for_payment_response', :from => 'ready_to_transmit'
+      end
+      fsm.after_transition :to => 'waiting_for_payment_response', :do => lambda {|order| order.update_attribute(:checkout_complete, true)}  
+  
+      fsm.event :approve do
+        transition :to => 'ready_to_ship', :from => 'waiting_for_payment_response'
+      end
+      fsm.after_transition :to => 'ready_to_ship', :do => :complete_order  
+  
+      fsm.event :cancel do
+        transition :to => 'canceled', :from => 'waiting_for_payment_response'
+      end
     end
+
   
     # Add support for internationalization to this extension.
     Globalite.add_localization_source(File.join(RAILS_ROOT, 'vendor/extensions/ps_spree_own_cart/lang/ui'))

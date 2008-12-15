@@ -4,6 +4,7 @@ class CreatePagseguroPayments < ActiveRecord::Migration
       t.references :order
       t.string :email
       t.string :payer_id
+      t.string :state
       t.timestamps
     end
   end
