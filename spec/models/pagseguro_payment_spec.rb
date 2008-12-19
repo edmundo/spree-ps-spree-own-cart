@@ -32,7 +32,7 @@ describe PagseguroPayment do
     @pagseguro_payment.should be_valid
   end
   
-  describe "state transition" do
+  describe "making transitions" do
 
     before(:each) do
       @pagseguro_payment.attributes = valid_pagseguro_payment_attributes
@@ -251,6 +251,29 @@ describe PagseguroPayment do
       end
     end
 
+    describe "to payment_approved" do
+      it "should mark its order as ready_to_ship" do
+        @pagseguro_payment.state = "waiting_for_payment"
+        @pagseguro_payment.order.should_receive(:approve!).and_return(true)
+        @pagseguro_payment.approve_payment
+      end
+    end
+  
+    describe "to payment_canceled" do
+      it "should mark its order as canceled" do
+        @pagseguro_payment.state = "waiting_for_payment"
+        @pagseguro_payment.order.should_receive(:cancel!).and_return(true)
+        @pagseguro_payment.cancel_payment
+      end
+    end
+  
+    describe "to status_definition_expired" do
+      it "should mark its order as canceled" do
+        @pagseguro_payment.state = "waiting_for_status_definition"
+        @pagseguro_payment.order.should_receive(:cancel!).and_return(true)
+        @pagseguro_payment.expire
+      end
+    end
   end
 
 end

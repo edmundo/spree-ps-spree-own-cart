@@ -12,7 +12,7 @@ items_extras: Items Extras
 notes: Notes
 transaction_status: Transaction Status
 received_at: Reveived At
-fail_payment: Fail payment
-pay: Pay
-pend_payment: Pend payment
+approve: Approve
+ship: Ship
+return: Return
 confirmation: Confirmation

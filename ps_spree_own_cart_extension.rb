@@ -51,15 +51,13 @@ class PsSpreeOwnCartExtension < Spree::Extension
           pagseguro_url = Spree::Pagseguro::Config[:billing_url]
         end
 
-        # Mark the order as waiting for payment response if it was ready to transmit
+        # Mark the order as waiting for payment response if it was ready to transmit and clean the session.
         if @order.state == "ready_to_transmit"
           @order.wait_for_payment_response!
+          session[:order_id] = nil
         end
 
         payload = Spree::Pagseguro::CheckoutData.data_to_send(@order)
-        
-        RAILS_DEFAULT_LOGGER.info "XXXXXXXX #{payload}"
-        
               
         # If we are waiting for payment response the checkout is complete
         if object.checkout_complete
@@ -70,16 +68,8 @@ class PsSpreeOwnCartExtension < Spree::Extension
             response = ssl_post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
           end
 
-          RAILS_DEFAULT_LOGGER.info "XXXXXXXX #{response}"
+          # Render the payment screen.
           render :inline => response
-          
-          # remove the order from the session
-          #session[:order_id] = nil
-          #redirect_to object_url and return
-        else
-          # note: controllers participating in checkout process are responsible for calling Order#next! 
-          next_url = self.send("new_order_#{object.state}_url", @order)
-          redirect_to next_url
         end
       end
     end
@@ -130,6 +120,10 @@ class PsSpreeOwnCartExtension < Spree::Extension
       fsm.event :cancel do
         transition :to => 'canceled', :from => 'waiting_for_payment_response'
       end
+
+      fsm.event :ship do
+        transition :to => 'shipped', :from => 'ready_to_ship'
+      end
     end
 
   
@@ -143,5 +137,9 @@ class PsSpreeOwnCartExtension < Spree::Extension
         @extension_links << {:link => admin_pagseguro_settings_path , :link_text => Globalite.localize(:ext_ps_spree_own_cart), :description => Globalite.localize(:ext_ps_spree_own_cart_description)}
       end
     end
+  end
+
+  def self.require_gems(config)
+    config.gem 'activerecord-tableless', :lib => 'tableless'
   end
 end

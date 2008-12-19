@@ -4,7 +4,7 @@ class PagseguroPaymentsController < Spree::BaseController
   layout 'application'
   
   resource_controller :singleton
-  belongs_to :order
+  #belongs_to :order
 
   create.response do |wants|
     wants.html do 
@@ -14,92 +14,62 @@ class PagseguroPaymentsController < Spree::BaseController
 
   def notification
     # First we process the request to create a notification object.
-    notification = Spree::Pagseguro::Notification.new(request.raw_post)
+    a_notification = Notification.create
+    a_notification.parse!(request.raw_post)
     
     # Verifies if theres something in the notification.
-    if !notification.raw.empty?
+    if !a_notification.empty?
       # Anti-spoofing validation.
-
-      # Verify if the seller email in the notification is our.
-      if notification.seller_email != Spree::Pagseguro::Config[:account]
-        logger.error("Received a notification where the seller email is #{notification.seller_email}, but this address is not ours.")
+      if !a_notification.valid?
+        logger.info "Uma notificação acaba de ser recusada. Segue a lista dos erros de validação: #{a_notification.errors.full_messages}."
         return false
       end
-      # Verify if the transaction_id in the notification is unique.
-      a_transaction = PagseguroTxn.find_by_transaction_id(notification.transaction_id)
-      if a_transaction
-        logger.error("Received an already existent transaction id #{notification.transaction_id}, but it must be unique.")
-        return false
-      end
-      # Verify if the notification refered order number exists.
-      refered_order = Order.find_by_number(notification.reference)
-      if !refered_order
-        logger.error("No order was found with the received refered number #{notification.reference}, we don't know what to do with this notification.")
-        return false
-      end
-      # Calculate the notification prices.
-      items_price = 0
-      items_shipping_price = 0
-      items_extras = 0
-      (1..notification.number_of_items.to_i).to_a.each do |i|
-        items_price += (notification.send("prod_price_#{i}").to_f * notification.send("prod_quantity_#{i}").to_i)
-        items_shipping_price += (notification.send("prod_shipping_price_#{i}").to_f)
-        items_extras += (notification.send("prod_extras_#{i}").to_f)
-      end
-      # Verify if the total order value in the notification is the same as in the order.
-      if items_price != refered_order.total
-        refered_order.fail_payment!
-        logger.error("Incorrect order total during PagSeguro's notification, please investigate (PagSeguro processed #{items_price}, and order total is #{refered_order.total})")
-        return false
-      end
-
-        
+      
       # Create a transaction which records the details of the notification
       a_transaction = PagseguroTxn.new(
-        :transaction_id => notification.transaction_id, 
-        :reference => notification.reference,
-        :shipping_type => notification.shipping_type,
-        :shipping_price => notification.shipping_price,
-        :notes => notification.notes,
-        :received_at =>  Time.now.to_s(:db),
-        :payment_type => notification.payment_type,
-        :transaction_status => notification.transaction_status,
-        :number_of_items => notification.number_of_items,
-        :items_price => items_price,
-        :items_shipping_price => items_shipping_price,
-        :items_extras => items_extras
+        :transaction_id => a_notification.TransacaoID, 
+        :reference => a_notification.Referencia,
+        :shipping_type => a_notification.TipoFrete,
+        :shipping_price => a_notification.ValorFrete,
+        :notes => a_notification.Anotacao,
+        :received_at => Time.now.to_s(:db),
+        :payment_type => a_notification.TipoPagamento,
+        :transaction_status => a_notification.StatusTransacao,
+        :number_of_items => a_notification.NumItens,
+        :items_price => a_notification.items_price,
+        :items_shipping_price => a_notification.items_shipping_price,
+        :items_extras => a_notification.items_extras
       )
 
       # Is this the first notification received?
-      if !refered_order.pagseguro_payment
+      if !a_notification.order.pagseguro_payment
         # Creates the payment object
-        a_payment = PagseguroPayment.new(:email => notification.client_email)
-        refered_order.pagseguro_payment = a_payment
+        a_payment = PagseguroPayment.new(:email => a_notification.CliEmail)
+        a_notification.order.pagseguro_payment = a_payment
       else
         # Load the payment object.
-        a_payment = refered_order.pagseguro_payment
+        a_payment = a_notification.order.pagseguro_payment
       end
 
       a_payment.txns << a_transaction
       
-    
       # We then send back the request to be validated adding two more fields.
       # So be can really trust it came from PagSeguro.
-      if notification.acknowledge(Spree::Pagseguro::Config[:token])
-        case notification.transaction_status
+      if a_notification.acknowledge(Spree::Pagseguro::Config[:token])
+        case a_notification.StatusTransacao
         when "Completo"
-          refered_order.pagseguro_payment.complete_payment!
+          a_notification.order.pagseguro_payment.complete_payment!
         when "Aguardando Pagto"
-          refered_order.pagseguro_payment.wait_for_payment!
+          a_notification.order.pagseguro_payment.wait_for_payment!
         when "Aprovado"
-          refered_order.pagseguro_payment.approve_payment!
+          a_notification.order.pagseguro_payment.approve_payment!
         when "Em Análise"
-          refered_order.pagseguro_payment.analyze_payment!
+          a_notification.order.pagseguro_payment.analyze_payment!
         when "Cancelado"
-          refered_order.pagseguro_payment.cancel_payment!
+          a_notification.order.pagseguro_payment.cancel_payment!
         else
-          refered_order.pagseguro_payment.cancel_payment!
-          logger.info("Received an unexpected status (#{notification.transaction_status}) for order: #{refered_order.number}")
+          a_notification.order.pagseguro_payment.cancel_payment!
+          logger.info("Received an unexpected status (#{a_notification.StatusTransacao}) for order: #{a_notification.order}")
         end
       else
         logger.info("Unexpected verification response received.")
@@ -114,10 +84,19 @@ class PagseguroPaymentsController < Spree::BaseController
       render :nothing => true
     else # notification.raw empty
       # Its an user.
-      clean_session_information
-
-      refered_order.wait_for_payment_response!
-      # Here we must show the response page.
+      
+      # Theres an order in an state ready_to_transmit, this means it was already saved and passed by the
+      # other states.
+      if @order.state == "ready_to_transmit"
+         @order.wait_for_payment_response!
+         clean_session_information
+         # Here we must show the response page.
+      # The filter always create an order, this means that here a new order was created, or that the order
+      # was not passed the previous states yet.
+      else
+        # Here we must to render nothing, and simply ignore this request.
+        render :nothing => true
+      end  
     end # is_robot
 
   end # notification

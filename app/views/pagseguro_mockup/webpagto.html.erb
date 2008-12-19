@@ -17,8 +17,8 @@
 
 <label>TipoPagamento:
   <select name="TipoPagamento">
-    <option value="Pagamento">Pagamento</option>
     <option value="Cartão de Crédito">Cartão de Crédito</option>
+    <option value="Pagamento">Pagamento</option>
     <option value="Boleto">Boleto</option>
     <option value="Pagamento Online">Pagamento Online</option>
   </select>
@@ -29,10 +29,10 @@
       
 <label>StatusTransacao:
   <select name="StatusTransacao">
+    <option value="Em Análise">Em Análise</option>
     <option value="Completo">Completo</option>
     <option value="Aguardando Pagto">Aguardando Pagto</option>
     <option value="Aprovado">Aprovado</option>
-    <option value="Em Análise">Em Análise</option>
     <option value="Cancelado">Cancelado</option>
   </select>
 </label>
@@ -58,13 +58,13 @@
   <% [
     ["item_id_#{i}", "ProdId_#{i}"],
     ["item_descr_#{i}", "ProdDescricao_#{i}"],
-    ["item_quant_#{i}", "ProdQuantidade_#{i}"],
-    ["item_frete_#{i}", "ProdFrete_#{i}"]
+    ["item_quant_#{i}", "ProdQuantidade_#{i}"]
   ].each do |item| -%>
     <input name="<%= item[1] %>" value="<%= params[item[0].to_sym] %>" type="hidden" />
   <% end -%>
     <% valor = params["item_valor_#{i}".to_sym].to_f / 100 %>
     <input name="<%= "ProdValor_#{i}" %>" value="<%= number_to_currency(valor, :unit => '').to_s %>" type="hidden" />
+    <input name="<%= "ProdFrete_#{i}" %>" value="0,00" type="hidden" />
     <input name="<%= "ProdExtras_#{i}" %>" value="0,00" type="hidden" />
 <% end -%>
 
