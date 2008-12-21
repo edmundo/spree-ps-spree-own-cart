@@ -39,14 +39,15 @@ class Notification < ActiveRecord::Base
     end
   end
 
-#  validates_inclusion_of :TipoFrete, :in => ["FR", "SD", "EN"], :message => "Frete {{value}} não está incluído na lista"
-#  validates_inclusion_of :TipoPagamento, :in => ["Pagamento", "Cartão de Crédito", "Boleto", "Pagamento online"], :message => "Tipo de pagamento {{value}} não está incluído na lista"
-#  validates_inclusion_of :StatusTransacao, :in => ["Completo", "Aguardando Pagto", "Aprovado", "Em Análise", "Cancelado"], :message => "Estado da transação {{value}} não está incluído na lista"
-#
-#  validates_length_of :CliCEP, :maximum => 5
-#
-#  validates_numericality_of :NumItens
-#
+  validates_inclusion_of :TipoFrete, :in => ["FR", "SD", "EN"], :message => "%s não está incluído na lista"
+  validates_inclusion_of :TipoPagamento, :in => ["Pagamento", "Cartão de Crédito", "Boleto", "Pagamento online"], :message => "%s não está incluído na lista"
+  validates_inclusion_of :StatusTransacao, :in => ["Completo", "Aguardando Pagto", "Aprovado", "Em Análise", "Cancelado"], :message => "%s não está incluído na lista"
+
+  validates_format_of :CliCEP, :with => /\A[0-9]{8}\Z/i, :message => "%s deve conter exatamente oito dígitos numéricos sem o traço"
+
+  validates_numericality_of :NumItens, :only_integer => true, :message => :is_not_an_integer.l
+  validates_numericality_of :NumItens, :greater_than_or_equal_to => 1, :message => :is_not_a_positive_number.l
+
 #  (1..25).to_a.each do |i|
 #    validates_numericality_of "ProdQuantidade_#{i}".to_sym
 #    validates_numericality_of "ProdValor_#{i}".to_sym
@@ -59,7 +60,7 @@ class Notification < ActiveRecord::Base
   def validate
     # Validates if it is unique.
     unless transaction_id_unique?
-      errors.add(:TransacaoID, "deve ser único.")
+      errors.add(:TransacaoID, :error_message_taken.l)
     end
     # Validates if the seller e-mail is correct.
     unless self.VendedorEmail == Spree::Pagseguro::Config[:account]
@@ -78,7 +79,7 @@ class Notification < ActiveRecord::Base
       end
       # Verify if the total order value in the notification is the same as in the order.
       unless self.items_price == self.order.total
-        errors.add("O valor total da notificação não confere com o pedido, notificação: #{self.items_price}, pedido: #{self.order.total}.")
+        errors.add(:order, "total não confere com a notificação, pedido: #{self.order.total}, notificação: #{self.items_price}.")
       end
     end
   end

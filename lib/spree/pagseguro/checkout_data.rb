@@ -44,6 +44,7 @@ module Spree #:nodoc:
         data_to_transmit = {
           "email_cobranca" => Spree::Pagseguro::Config[:account],
           "tipo"           => "CP",
+          "tipo_frete"     => "FR",
           "moeda"          => "BRL",
           "cliente_nome"   => order.address.full_name,
           "cliente_cep"    => order.address.zipcode,

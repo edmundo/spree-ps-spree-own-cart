@@ -2,9 +2,9 @@
 require_dependency 'application'
 
 class PsSpreeOwnCartExtension < Spree::Extension
-  version "1.0"
-  description "Describe your extension here"
-  url "http://yourwebsite.com/ps_spree_own_cart"
+  version "0.99"
+  description "Support for brazilian online payment service PagSeguro using Spree's own cart."
+  url "http://github.com/edmundo/spree-ps-spree-own-cart/tree/master"
 
   def activate
 
@@ -34,7 +34,7 @@ class PsSpreeOwnCartExtension < Spree::Extension
     OrdersController.class_eval do
       include Spree::Pagseguro::PostsData
 
-      before_filter :load_object, :only => [:checkout, :confirmation, :transmit]
+      before_filter :load_object, :only => [:checkout, :confirmation, :transmit, :finished]
       skip_before_filter :verify_authenticity_token, :only => [:transmit]
 
       def confirmation
@@ -54,6 +54,13 @@ class PsSpreeOwnCartExtension < Spree::Extension
         # Mark the order as waiting for payment response if it was ready to transmit and clean the session.
         if @order.state == "ready_to_transmit"
           @order.wait_for_payment_response!
+
+          @order.update_attribute("ip_address", request.env['REMOTE_ADDR'] || "unknown")
+          @order.update_attribute("checkout_complete", true) 
+          
+          # Get rid of the order in the session quick and put it in another place just for the
+          # final message.
+          session[:transmited_order_id] = session[:order_id]
           session[:order_id] = nil
         end
 
@@ -72,6 +79,11 @@ class PsSpreeOwnCartExtension < Spree::Extension
           render :inline => response
         end
       end
+
+      def finished
+        # Here is just rendered the finish message.
+      end
+
     end
 
 

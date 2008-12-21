@@ -99,10 +99,20 @@ describe PagseguroPayment do
         @pagseguro_payment.state.should == "payment_canceled"
       end
 
+      it "should mark its order as canceled too when called cancel_payment" do
+        @pagseguro_payment.order.should_receive(:cancel!)
+        @pagseguro_payment.cancel_payment!
+      end
+
       # Everything is fine with the analisys of the creditcard and the payment was approved.
       it "should transition to payment_approved when called approve_payment" do
         @pagseguro_payment.approve_payment
         @pagseguro_payment.state.should == "payment_approved"
+      end
+
+      it "should mark its order as ready_to_ship too when called approve_payment" do
+        @pagseguro_payment.order.should_receive(:approve!)
+        @pagseguro_payment.approve_payment!
       end
 
       # The type of payment chosen cannot change in the middle of the process.
@@ -122,6 +132,7 @@ describe PagseguroPayment do
         @pagseguro_payment.complete_payment
         @pagseguro_payment.state.should == "payment_being_analyzed"
       end
+
     end
     
     # Here we already know that the chosen type of payment was bank payment slip.
@@ -137,10 +148,20 @@ describe PagseguroPayment do
         @pagseguro_payment.state.should == "payment_canceled"
       end
 
+      it "should mark its order as canceled too when called cancel_payment" do
+        @pagseguro_payment.order.should_receive(:cancel!)
+        @pagseguro_payment.cancel_payment!
+      end
+
       # Everything is fine with the payment slip and a payment was identified.
       it "should transition to payment_approved when called approve_payment" do
         @pagseguro_payment.approve_payment
         @pagseguro_payment.state.should == "payment_approved"
+      end
+
+      it "should mark its order as ready_to_ship too when called approve_payment" do
+        @pagseguro_payment.order.should_receive(:approve!)
+        @pagseguro_payment.approve_payment!
       end
 
       # The type of payment chosen cannot change in the middle of the process.

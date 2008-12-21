@@ -1,0 +1,18 @@
+<h1><%= t("order_processed_successfully") %></h1>
+
+<div class="site_retreat">
+
+<%= t("thank_you_for_your_order") %>
+<br/>
+
+<%= render :partial => 'shared/order_details', :locals => {:order => @order} -%>
+
+<br/>
+
+<div style="float:right;">
+  <div class="site_button" style="width:132px;">
+    <%= link_to(t("back_to_store"), products_path, :class => "site_button site_button_blue_128x24") %>
+  </div>
+</div>
+
+</div>

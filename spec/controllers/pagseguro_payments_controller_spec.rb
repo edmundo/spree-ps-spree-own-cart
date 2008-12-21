@@ -40,44 +40,13 @@ describe PagseguroPaymentsController do
     @pagseguro_payment = mock_model(PagseguroPayment, :null_object => true)
   end
   
+  # POST is supposed to be used by the gateway's robot to send notifications, here we describe it being
+  # issued with different kinds of data, valid, invalid, blank, etc and in wrong states.
+  # The transmit action is supposed to drop the order in an "waiting_for_payment_response" state and clean
+  # the order in the session already.
   describe "handling POST /pagseguro_payment/notification" do
     before(:each) do
       @order = mock_model(Order, :null_object => true)
-    end
-
-    describe "without POST data" do
-      describe "when having an order ready_to_transmit in the session" do
-        it "should mark the order as waiting_for_payment_response and clean it from the session" do
-          session[:order_id] = "1"
-          
-          # For any method that asks, return the mocked order.
-          Order.stub!(:find).and_return(@order)
-          Order.stub!(:find_or_create_by_id).and_return(@order)
-
-          # It should be verified if is ready to transmit and be marked as waiting_for_payment_response.
-          @order.should_receive(:state).at_least(:once).and_return("ready_to_transmit")
-          @order.should_receive(:wait_for_payment_response!)
-          
-          post :notification
-          session[:order_id].should be_nil
-        end
-      end
-
-      describe "when having an order in any other state in the session" do
-        it "should do nothing" do
-          session[:order_id] = nil
-          
-          # For any method that asks, return the mocked order.
-          Order.stub!(:create).and_return(@order)
-
-          # It should be verified if is ready to transmit and NOT be marked as waiting_for_payment_response.
-          @order.should_receive(:state).at_least(:once).and_return("in_progress")
-          @order.should_not_receive(:wait_for_payment_response!)
-          
-          post :notification
-          session[:order_id].should_not be_nil
-        end
-      end
     end
 
     describe "with valid POST data" do
@@ -141,16 +110,6 @@ describe PagseguroPaymentsController do
           post :notification, valid_pagseguro_payment_post_data.with(:StatusTransacao => "Aprovado")
         end
 
-        it "should mark the payment's order as ready_to_ship when in waiting_for_payment" do
-          @pagseguro_payment = PagseguroPayment.create({:order => @order})
-          @pagseguro_payment.state = "waiting_for_payment"
-          @order.stub!(:pagseguro_payment).and_return(@pagseguro_payment)
-          
-          @order.should_receive(:approve!)
-          
-          post :notification, valid_pagseguro_payment_post_data.with(:StatusTransacao => "Aprovado")
-        end
-
         it "should mark the payment's order as ready_to_ship when in payment_being_analyzed" do
           @pagseguro_payment = PagseguroPayment.create({:order => @order})
           @pagseguro_payment.state = "payment_being_analyzed"
@@ -185,15 +144,6 @@ describe PagseguroPaymentsController do
           post :notification, valid_pagseguro_payment_post_data.with(:StatusTransacao => "Cancelado")
         end
 
-        it "should mark the payment's order as canceled when in payment_being_analyzed" do
-          @pagseguro_payment = PagseguroPayment.create({:order => @order})
-          @pagseguro_payment.state = "payment_being_analyzed"
-          @order.stub!(:pagseguro_payment).and_return(@pagseguro_payment)
-          
-          @order.should_receive(:cancel!)
-          
-          post :notification, valid_pagseguro_payment_post_data.with(:StatusTransacao => "Cancelado")
-        end
       end
 
       describe "notifying payment_completed" do
@@ -206,13 +156,68 @@ describe PagseguroPaymentsController do
           post :notification, valid_pagseguro_payment_post_data.with(:StatusTransacao => "Completo")
         end
       end
+      
+      describe "when its order has not completed the checkout process yet" do
+        it "should be ignored and log the error" do
+          post :notification, valid_pagseguro_payment_post_data.with(:StatusTransacao => "Completo")
+          response.should be_success
 
+          response.body.should == " "
+        end
+      end
+
+    end
+
+    describe "without POST data" do
+      it "should ignore the request and log the errors" do
+        post :notification
+        response.should be_success
+
+        response.body.should == " "
+      end
     end
 
     describe "with invalid POST data" do
       it "should ignore the request and log the errors"
     end
 
+  end
+
+  # GET is supposed to be used by the user after finished the payment to receive a final message, here
+  # we describe it being requested in valid and invalid states in the checkout process.
+  # The transmit action is supposed to drop the order in an "waiting_for_payment_response" state and clean
+  # the order in the session already.
+  describe "handling GET /pagseguro_payment/notification" do
+    
+    describe "when there is a transmited order in the session" do
+      before(:each) do
+        session[:transmited_order_id] = 1
+        @order = mock_model(Order, :null_object => true)
+        @controller.stub!(:find_order).and_return(@order)
+        Order.stub!(:find).and_return(@order)
+        @order.stub!(:state).and_return("waiting_for_payment_response")
+      end
+      
+      it "should show response screen to user" do
+        get :notification
+        response.should be_redirect
+        response.should redirect_to(:controller => 'orders', :action => 'finished', :id => @order.id)
+      end
+
+      it "should clean the transmited order in the session" do
+        get :notification
+        session[:transmited_order_id].should be_nil
+      end
+    end
+
+    describe "when there is not a transmited order in the session" do
+      it "should do nothing" do
+        get :notification
+        response.should be_success
+
+        response.body.should == " "
+      end
+    end
   end
 
 end

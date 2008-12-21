@@ -52,4 +52,72 @@ describe Notification do
     @notification.should be_valid
   end
 
+  it "should not be valid when having a not valid TipoFrete" do
+    @notification.attributes = valid_notification_attributes.with(:TipoFrete => "YZ")
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'TipoFrete'.humanize} #{@notification.TipoFrete} não está incluído na lista")
+  end
+
+  it "should not be valid when having a not valid TipoPagamento" do
+    @notification.attributes = valid_notification_attributes.with(:TipoPagamento => "Fiado")
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'TipoPagamento'.humanize} #{@notification.TipoPagamento} não está incluído na lista")
+  end
+
+  it "should not be valid when having a not valid StatusTransacao" do
+    @notification.attributes = valid_notification_attributes.with(:StatusTransacao => "Nenhum")
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'StatusTransacao'.humanize} #{@notification.StatusTransacao} não está incluído na lista")
+  end
+
+  it "should have exactly 8 numberic characters on CliCEP" do
+    @notification.attributes = valid_notification_attributes.with(:CliCEP => "12345-123")
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'CliCEP'.humanize} #{@notification.CliCEP} deve conter exatamente oito dígitos numéricos sem o traço")
+  end
+
+  it "should only accept numeric NumItens" do
+    @notification.attributes = valid_notification_attributes.with(:NumItens => "foo")
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'NumItens'.humanize} #{:is_not_an_integer.l}")
+  end
+
+  it "should only accept integer NumItens" do
+    @notification.attributes = valid_notification_attributes.with(:NumItens => 0.5)
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'NumItens'.humanize} #{:is_not_an_integer.l}")
+  end
+
+  it "should only accept positive NumItens" do
+    @notification.attributes = valid_notification_attributes.with(:NumItens => -2)
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'NumItens'.humanize} #{:is_not_a_positive_number.l}")
+  end
+
+  it "should have a unique TransacaoID" do
+    PagseguroTxn.stub!(:find_by_transaction_id).and_return(mock_model(PagseguroTxn, :null_object => true))
+    @notification.attributes = valid_notification_attributes
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'TransacaoID'.humanize} #{:error_message_taken.l}")
+  end
+
+  it "should have a valid VendedorEmail" do
+    @notification.attributes = valid_notification_attributes.with(:VendedorEmail => "another_acoount@@example.com")
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'VendedorEmail'.humanize} não é nosso endereço de e-mail.")
+  end
+
+  it "should reference an existing and valid order" do
+    @notification.attributes = valid_notification_attributes.with(:order => nil)
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'order'.intern.l('order').humanize} não foi possível estabelecer um vínculo com pedido algum.")
+  end
+
+  it "should match its totals with its refered order totals" do
+    @notification.attributes = valid_notification_attributes
+    @notification.order.stub!(:total).and_return(99)
+    @notification.should_not be_valid
+    @notification.errors.full_messages.should include("#{'order'.intern.l('order').humanize} total não confere com a notificação, pedido: #{@notification.order.total}, notificação: #{@notification.items_price}.")
+  end
+
 end

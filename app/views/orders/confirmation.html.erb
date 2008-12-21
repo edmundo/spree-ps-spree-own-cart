@@ -1,0 +1,31 @@
+<h1><%= t("confirmation") %></h1>
+
+<div class="site_retreat">
+
+<center>
+Verifique o conteúdo do seu pedido e confirme o pagamento. Pressionando o botão abaixo você será redirecionado ao
+serviço PagSeguro para finalizar o pagamento, preencha qualquer informação adicional requerida pelo processo do
+PagSeguro e finalize a sua compra.
+<br/><br/>
+Relembrando você os prazos para liberação do pedido:
+<br/><br/>
+Cartão de de crédito: até 2 dias úteis.<br/>
+Boleto bancário: até 3 dias úteis.<br/>
+Pagamento online: até 1 dia útil.<br/>
+Pagamento PagSeguro: instantâneo.<br/>
+  <br/><br/>
+
+<form action="<%= transmit_order_url(@order) %>" method="post" id="transmit_form">
+
+  <div class="site_button" style="width:146px;">
+    <%= link_to(t("checkout"), "#", :class => "site_button site_button_checkout_pagseguro", :onclick => "$('transmit_form').submit(); return false;") %>
+  </div>
+
+</form>
+
+</center>
+
+</div>
+
+<%= render :partial => 'shared/order_preview' %>
+
