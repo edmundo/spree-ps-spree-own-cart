@@ -31,11 +31,11 @@ Não é necessário "escolher" o PagSeguro como forma de pagamento já que a fin
 
 Exemplos de funcionalidades acessíveis através da interface, (a customização do layout não está incluída).
 
-Acompanhamento do estado dos pedidos
+Acompanhamento do estado dos pedidos  
 <br/><br/>
 <img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/spree-ps-spree-own-cart_orders_list.png" style="border: 1px solid #CCC;" />
 
-Acompanhamento do estado do pagamento e notificações recebidas
+Acompanhamento do estado do pagamento e notificações recebidas  
 <br/><br/>
 <img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/spree-ps-spree-own-cart_payment_txn.png" style="border: 1px solid #CCC;" />
 
