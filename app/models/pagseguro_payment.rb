@@ -27,7 +27,7 @@ class PagseguroPayment < ActiveRecord::Base
       transition :to => 'payment_canceled', :from => ['payment_being_analyzed', 'waiting_for_payment']
     end
     event :approve_payment do
-      transition :to => 'payment_approved', :from => ['payment_being_analyzed', 'waiting_for_payment']
+      transition :to => 'payment_approved', :from => ['payment_being_analyzed', 'waiting_for_payment', 'waiting_for_status_definition']
     end
     event :complete_payment do
       transition :to => 'payment_completed', :from => 'payment_approved'

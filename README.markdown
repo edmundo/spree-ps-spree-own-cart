@@ -16,8 +16,28 @@ Esta extensão foi baseada na extensão pp_website_standard (suporte ao PayPal W
 ## Estado atual
 Em desenvolvimento.
 
+## Pendente
+Possibilitar a configuração do tipo de frete (cálculo próprio, PAC calculado pelo PagSeguro, Sedex calculado pelo PagSeguro) através da interface gráfica.
+Fazer a interface de testes ficar mais parecida com o servidor do PagSeguro.
+Testar em produção (já que o PagSeguro não tem servidor de testes).
+
 ## Configuração
 Não é necessário "escolher" o PagSeguro como forma de pagamento já que a finalização padrão está sendo sobreposta. Você pode configurar a sua conta utilizada no PagSeguro acessando as configurações da extensão através do módulo administrativo.
+
+#gems necessários
+activerecord-tableless
+
+#Screenshots
+
+Exemplos de funcionalidades acessíveis através da interface, (a customização do layout não está incluída).
+
+Acompanhamento do estado dos pedidos
+<br/><br/>
+<img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/spree-ps-spree-own-cart_orders_list.png" style="border: 1px solid #CCC;" />
+
+Acompanhamento do estado do pagamento e notificações recebidas
+<br/><br/>
+<img src="http://i498.photobucket.com/albums/rr350/edmundo_vn/spree-ps-spree-own-cart_payment_txns.png" style="border: 1px solid #CCC;" />
 
 ## Testes
 O sistema tem algumas ações que respondem com respostas pré-definidas imitando o servidor do PagSeguro, você pode rodar duas instâncias do sistema e fazer uma utilizar a outra como servidor de testes, esse é o padrão. Ou você pode fazer o download do ambiente de testes em http://visie.com.br/pagseguro/ambientetestes.php. Conforme as instruções, você deve rodá-lo e ele ficará disponível localmente na porta 443. Eu particularmente não altero o arquivo /etc/hosts, a extensão tenta utilizar automaticamente a url de testes como gateway de pagamento se você setar a opção "Sempre utilizar o servidor de testes" ou rodar o sistema em modo de desenvolvimento.

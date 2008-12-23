@@ -77,8 +77,9 @@ class Notification < ActiveRecord::Base
         self.items_shipping_price += self.send("ProdFrete_#{i}")
         self.items_extras += self.send("ProdExtras_#{i}")
       end
+      self.items_total = self.items_price + self.items_shipping_price + self.items_extras
       # Verify if the total order value in the notification is the same as in the order.
-      unless self.items_price == self.order.total
+      unless self.items_total == self.order.total
         errors.add(:order, "total não confere com a notificação, pedido: #{self.order.total}, notificação: #{self.items_price}.")
       end
     end
@@ -88,6 +89,7 @@ class Notification < ActiveRecord::Base
   attr_accessor :items_price
   attr_accessor :items_shipping_price
   attr_accessor :items_extras
+  attr_accessor :items_total
 
   
   def complete?
@@ -135,6 +137,9 @@ class Notification < ActiveRecord::Base
     
     # Define to wich order it points to.
     self.order = Order.find_by_number(self.Referencia)
+
+    # Define the shipping type as defined by the store if nothing was received.
+    self.TipoFrete = "FR" if self.TipoFrete.empty?
     
     return true
   end

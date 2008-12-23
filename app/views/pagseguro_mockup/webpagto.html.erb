@@ -64,7 +64,8 @@
   <% end -%>
     <% valor = params["item_valor_#{i}".to_sym].to_f / 100 %>
     <input name="<%= "ProdValor_#{i}" %>" value="<%= number_to_currency(valor, :unit => '').to_s %>" type="hidden" />
-    <input name="<%= "ProdFrete_#{i}" %>" value="0,00" type="hidden" />
+    <% frete = params["item_frete_#{i}".to_sym].to_f / 100 %>
+    <input name="<%= "ProdFrete_#{i}" %>" value="<%= number_to_currency(frete, :unit => '').to_s %>" type="hidden" />
     <input name="<%= "ProdExtras_#{i}" %>" value="0,00" type="hidden" />
 <% end -%>
 

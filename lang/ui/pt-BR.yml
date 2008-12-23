@@ -21,3 +21,9 @@ ready_to_transmit: pronto_para_ser_transmitido
 wait_for_payment_response: Aguardar Aprovação
 waiting_for_payment_response: aguardando_aprovação
 ready_to_ship: pronto_para_ser_enviado
+payment_being_analyzed: sendo_analisado
+payment_approved: aprovado
+payment_canceled: cancelado
+status_definition_expired: expirado
+waiting_for_payment: aguardando_pagamento
+payment_completed: completo
