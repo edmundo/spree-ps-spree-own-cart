@@ -68,18 +68,18 @@ describe PagseguroPayment do
         @pagseguro_payment.state.should == "status_definition_expired"
       end
 
+      # We cannot approve a payment that was never being done.
+      it "should transition to payment_approved when called approve_payment" do
+        @pagseguro_payment.approve_payment
+        @pagseguro_payment.state.should == "payment_approved"
+      end
+
       # We cannot cancel a payment that was never being done.
       it "should not transition to payment_canceled when called cancel_payment" do
         @pagseguro_payment.cancel_payment
         @pagseguro_payment.state.should == "waiting_for_status_definition"
       end
       
-      # We cannot approve a payment that was never being done.
-      it "should not transition to payment_approved when called approve_payment" do
-        @pagseguro_payment.approve_payment
-        @pagseguro_payment.state.should == "waiting_for_status_definition"
-      end
-
       # We cannot say the payment was credited in our gateway account if it was never being done.
       it "should not transition to payment_completed when called complete_payment" do
         @pagseguro_payment.complete_payment

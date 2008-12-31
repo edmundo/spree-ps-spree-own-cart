@@ -28,7 +28,7 @@ module Spree #:nodoc:
           
         order.line_items.each_with_index do |item, index|
           data_to_transmit.merge!(
-            "item_id_#{index + 1}"    => item.variant.product.sku,
+            "item_id_#{index + 1}"    => item.variant.sku,
             "item_descr_#{index + 1}" => item.variant.product.name,
             "item_quant_#{index + 1}" => item.quantity.to_s,
             "item_valor_#{index + 1}" => (item.price*100).to_i.to_s
@@ -41,7 +41,6 @@ module Spree #:nodoc:
         end
 
         string = data_to_transmit.map {|k,v| "#{CGI::escape(k.to_s)}=#{CGI::escape(v.to_s)}" }.join('&')
-      
       end
     
       module_function :data_to_send

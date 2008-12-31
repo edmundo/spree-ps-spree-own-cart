@@ -6,13 +6,12 @@ module NotificationSpecHelper
     Spree::Pagseguro::Config.set({:account => "test@example.com"})
 
     order = mock_model(Order, :null_object => true)
-    order.stub!(:total).and_return(5.23 * 2)
+    order.stub!(:total).and_return((5.23 * 2) + 10.99) 
     {
       :VendedorEmail    => "test@example.com",
       :TransacaoID      => "123XYZ",
       :Referencia       => "1",
       :TipoFrete        => "FR",
-      :ValorFrete       => 10.99,
       :Anotacao         => "Here goes some notes.",
       :DataTransacao    => "01/01/2008 12:30:10",
       :TipoPagamento    => "Cartão de Crédito",
@@ -31,8 +30,8 @@ module NotificationSpecHelper
       :ProdDescricao_1  => "Nothing",
       :ProdValor_1      => 5.23,
       :ProdQuantidade_1 => 2,
-      :ProdFrete_1      => 2.30,
-      :ProdExtras_1     => 1.20,
+      :ProdExtras_1     => 0,
+      :ProdFrete_1      => 10.99,
       :NumItens         => 1,
       :order            => order
     }
@@ -117,7 +116,7 @@ describe Notification do
     @notification.attributes = valid_notification_attributes
     @notification.order.stub!(:total).and_return(99)
     @notification.should_not be_valid
-    @notification.errors.full_messages.should include("#{'order'.intern.l('order').humanize} total não confere com a notificação, pedido: #{@notification.order.total}, notificação: #{@notification.items_price}.")
+    @notification.errors.full_messages.should include("#{'order'.intern.l('order').humanize} total não confere com a notificação, pedido: #{@notification.order.total}, notificação: #{@notification.items_total}.")
   end
 
 end

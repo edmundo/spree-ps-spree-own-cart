@@ -7,6 +7,12 @@ class PsSpreeOwnCartExtension < Spree::Extension
   url "http://github.com/edmundo/spree-ps-spree-own-cart/tree/master"
 
   def activate
+    Address.class_eval do
+      validates_presence_of :number
+      validates_presence_of :borough
+      validates_presence_of :area_code
+      validates_numericality_of :area_code, :integer_only => true
+    end
 
     # Add a partial for PagSeguro Payment txns
     Admin::OrdersController.class_eval do
@@ -31,20 +37,40 @@ class PsSpreeOwnCartExtension < Spree::Extension
 #      end
 #    end
 
+    OrdersHelper.class_eval do
+      def to_iso(text)
+        Iconv.iconv('iso-8859-1', 'utf-8', text).to_s
+      end
+
+      def to_utf(text)
+        Iconv.iconv('utf-8', 'iso-8859-1', text).to_s
+      end
+    end
+
     OrdersController.class_eval do
+      before_filter :set_charset, :only => :transmit
+      def set_charset
+        headers["Content-Type"] = "text/html; charset=ISO-8859-1"
+      end
+      
       include Spree::Pagseguro::PostsData
 
       before_filter :load_object, :only => [:checkout, :confirmation, :transmit, :finished]
       skip_before_filter :verify_authenticity_token, :only => [:transmit]
+
+#      skip_before_filter :verify_authenticity_token, :only => [:confirmation]
 
       def confirmation
         # Mark the order as "ready to transmit"
         if @order.state == "shipment"
           @order.next!
         end
+
       end
 
       def transmit
+        require 'iconv'
+
         if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
           pagseguro_url = Spree::Pagseguro::Config[:sandbox_billing_url]
         else
@@ -64,20 +90,20 @@ class PsSpreeOwnCartExtension < Spree::Extension
           session[:order_id] = nil
         end
 
-        payload = Spree::Pagseguro::CheckoutData.data_to_send(@order)
-              
-        # If we are waiting for payment response the checkout is complete
-        if object.checkout_complete
-          # Transmit the form to PagSeguro
-          if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
-            response = post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
-          else
-            response = ssl_post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
-          end
+#        payload = Spree::Pagseguro::CheckoutData.data_to_send(@order)
 
-          # Render the payment screen.
-          render :inline => response
-        end
+#        # If we are waiting for payment response the checkout is complete
+#        if object.checkout_complete
+#          # Transmit the form to PagSeguro
+#          if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
+#            response = post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
+#          else
+#            response = ssl_post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
+#          end
+
+#          render :inline => response
+#        end
+         render :layout => false
       end
 
       def finished
