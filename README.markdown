@@ -17,6 +17,8 @@ Esta extensão foi baseada na extensão `pp_website_standard` (suporte ao PayPal
 Em desenvolvimento.
 
 ## Pendente
+* Revisar e fazer funcionar de acordo com as últimas mudanças no workflow dos pedidos inseridas no Spree dia 09/01/08.
+* Corrigir problemas de troca de conjunto de caracteres (o PagSeguro utiliza ISO-8859-1 enquanto o Spree utiliza UTF-8).
 * Possibilitar a configuração do tipo de frete (cálculo próprio, PAC calculado pelo PagSeguro, Sedex calculado pelo PagSeguro) através da interface gráfica.
 * Fazer a interface de testes ficar mais parecida com o servidor do PagSeguro.
 * Testar em produção (já que o PagSeguro não tem servidor de testes).
