@@ -1,0 +1,6 @@
+en-US:
+  ext:
+    ps_spree_own_cart:
+      extension_name: PagSeguro Spree Own Cart
+      extension_description: Support for brazilian online payment service PagSeguro using Spree's own cart.
+

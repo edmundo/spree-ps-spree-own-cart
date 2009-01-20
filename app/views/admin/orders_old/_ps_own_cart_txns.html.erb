@@ -1,0 +1,29 @@
+<% if @order.pagseguro_payment %>
+
+<b><%= t("ext.ps_spree_own_cart.pagseguro_transactions") %></b>
+
+  <table class="basic-table">
+    <tr>
+      <th><%= t("ext.ps_spree_own_cart.transaction_id") %></th>
+
+      <th><%= t("ext.ps_spree_own_cart.items_price") %></th>
+      <th><%= t("ext.ps_spree_own_cart.items_shipping_price") %></th>
+      <th><%= t("ext.ps_spree_own_cart.items_extras") %></th>
+      <th><%= t("ext.ps_spree_own_cart.notes") %></th>
+
+      <th><%= t("ext.ps_spree_own_cart.transaction_status") %></th>
+      <th><%= t("ext.ps_spree_own_cart.received_at") %></th>
+    </tr>
+    <% @order.pagseguro_payment.txns.each do |txn| %>
+      <tr>
+        <td><%= txn.transaction_id %></td>
+        <td><%= number_to_currency txn.items_price %></td>
+        <td><%= number_to_currency txn.items_shipping_price %></td>
+        <td><%= number_to_currency txn.items_extras %></td>
+        <td><%= txn.notes %></td>
+        <td><%= txn.transaction_status %></td>
+        <td><%= txn.received_at %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

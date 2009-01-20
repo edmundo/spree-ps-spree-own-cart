@@ -1,0 +1,37 @@
+pt-BR:
+  ext:
+    ps_spree_own_cart:
+      extension_name: PagSeguro Carrinho Próprio
+      extension_description: Suporte ao sistema brasileiro de pagamentos online PagSeguro utilizando o carrinho próprio do Spree.
+
+      pagseguro_transactions: Transações PagSeguro
+      transaction_id: Identificação
+      items_price: Valor dos Itens
+      items_extras: Custos Extras
+      items_shipping_price: Frete
+      transaction_status: Estado
+      received_at: Recebido em
+      pagseguro_payments: Pagamento PagSeguro
+      pagseguro_settings: Configurações do PagSeguro
+      always_use_sandbox: Sempre utilizar o servidor de testes
+      account: Conta
+      token: Token
+      confirmation: Confirmação
+      notes: Anotações
+
+
+      approve: Aprovar
+      creditcard_transactions: Transações com Cartão de Crédito
+      pagseguro_account: Conta PagSeguro
+      payment_approved: aprovado
+      payment_being_analyzed: sendo_analisado
+      payment_canceled: cancelado
+      payment_completed: completo
+      ready_to_ship: pronto_para_ser_enviado
+      ready_to_transmit: pronto_para_ser_transmitido
+      return: Devolver
+      ship: Enviar
+      status_definition_expired: expirado
+      wait_for_payment_response: Aguardar Aprovação
+      waiting_for_payment_response: aguardando_aprovação
+      waiting_for_payment: aguardando_pagamento
