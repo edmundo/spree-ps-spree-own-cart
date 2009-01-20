@@ -16,6 +16,9 @@ Esta extensão foi baseada na extensão `pp_website_standard` (suporte ao PayPal
 ## Estado atual
 Em desenvolvimento.
 
+## Código mantido dentro do diretório app a ser mixado
+Atualmente não estou colocando o código dentro do arquivo `..._extension.rb` utilizando `class_eval`, favor dar uma olhada nos últimos commits aqui `http://github.com/edmundo/spree/tree/app_override` para fazer o código de dentro do `app` ser mixado automaticamente.
+
 ## Pendente
 * Revisar e fazer funcionar de acordo com as últimas mudanças no workflow dos pedidos inseridas no Spree dia 09/01/08.
 * Corrigir problemas de troca de conjunto de caracteres (o PagSeguro utiliza ISO-8859-1 enquanto o Spree utiliza UTF-8).
