@@ -1,28 +1,11 @@
 class Order < ActiveRecord::Base
+  has_many :pagseguro_payments
+
   # Modify the transitions in core.
   fsm = Order.state_machines['state']
 
-  # Delete transitions that should not be used.
-  fsm.events['next'].transitions.delete_if { |t| t.options[:to] == "creditcard_payment" && t.options[:from] == "shipment" }
-  fsm.events['previous'].transitions.delete_if { |t| t.options[:to] == "shipment" && t.options[:from] == "creditcard_payment" }
-  fsm.events['next'].transitions.delete_if { |t| t.options[:to] == "authorized" && t.options[:from] == "creditcard_payment" }
-  fsm.events['edit'].transitions.delete_if { |t| t.options[:to] == "in_progress" && t.options[:from] == "creditcard_payment" }
-  fsm.events['capture'].transitions.delete_if { |t| t.options[:to] == "captured" && t.options[:from] == "authorized" }
-  fsm.events['ship'].transitions.delete_if { |t| t.options[:to] == "shipped" && t.options[:from] == "captured" }
-
-  # Delete states that should not be used.
-  fsm.states.delete('creditcard_payment')
-  fsm.states.delete('authorized')
-  fsm.states.delete('captured')
-
-  has_one :pagseguro_payment
-
   fsm.event :next do
-    transition :to => 'ready_to_transmit', :from => 'shipment'
-  end
-
-  fsm.event :previous do
-    transition :to => 'shipment', :from => 'ready_to_transmit'
+    transition :to => 'ready_to_transmit', :from => 'shipping_method'
   end
 
   fsm.event :edit do

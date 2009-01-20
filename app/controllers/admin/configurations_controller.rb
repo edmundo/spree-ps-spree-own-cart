@@ -4,8 +4,8 @@ class Admin::ConfigurationsController < Admin::BaseController
   def add_ps_spree_own_cart_link
     @extension_links << {
       :link => admin_pagseguro_settings_path ,
-      :link_text => Globalite.localize(:ext_ps_spree_own_cart),
-      :description => Globalite.localize(:ext_ps_spree_own_cart_description)
+      :link_text => t('ext.ps_spree_own_cart.extension_name'),
+      :description => t('ext.ps_spree_own_cart.extension_description')
     }
   end
 end

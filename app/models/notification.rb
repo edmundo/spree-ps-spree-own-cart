@@ -45,8 +45,8 @@ class Notification < ActiveRecord::Base
 
   validates_format_of :CliCEP, :with => /\A[0-9]{8}\Z/i, :message => "%s deve conter exatamente oito dígitos numéricos sem o traço"
 
-  validates_numericality_of :NumItens, :only_integer => true, :message => :is_not_an_integer.l
-  validates_numericality_of :NumItens, :greater_than_or_equal_to => 1, :message => :is_not_a_positive_number.l
+  validates_numericality_of :NumItens, :only_integer => true, :message => I18n.translate('is_not_an_integer')
+  validates_numericality_of :NumItens, :greater_than_or_equal_to => 1, :message => I18n.translate('is_not_a_positive_number')
 
 #  (1..25).to_a.each do |i|
 #    validates_numericality_of "ProdQuantidade_#{i}".to_sym
@@ -60,7 +60,7 @@ class Notification < ActiveRecord::Base
   def validate
     # Validates if it is unique.
     unless transaction_id_unique?
-      errors.add(:TransacaoID, :error_message_taken.l)
+      errors.add(:TransacaoID, :error_message_taken)
     end
     # Validates if the seller e-mail is correct.
     unless self.VendedorEmail == Spree::Pagseguro::Config[:account]

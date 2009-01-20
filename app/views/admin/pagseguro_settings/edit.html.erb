@@ -1,22 +1,22 @@
 <% form_tag(admin_pagseguro_settings_path, :method => :put) do -%>
 
-<h2><%= t('pagseguro_setting') %></h2>
+<h2><%= t('ext.ps_spree_own_cart.pagseguro_settings') %></h2>
 
 <div>
   <p>
-    <strong><%= t('account') %></strong>
+    <strong><%= t('ext.ps_spree_own_cart.account') %></strong>
     <%= text_field_tag('preferences[account]', Spree::Pagseguro::Config[:account])%>
   </p>
   <p>
-    <strong><%= t('token') %></strong>
+    <strong><%= t('ext.ps_spree_own_cart.token') %></strong>
     <%= text_field_tag('preferences[token]', Spree::Pagseguro::Config[:token])%>
   </p>
   <p>
-    <strong><%= t('always_use_sandbox') %></strong>
+    <strong><%= t('ext.ps_spree_own_cart.always_use_sandbox') %></strong>
     <%= check_box_tag('preferences[always_use_sandbox]', "1", Spree::Pagseguro::Config[:always_use_sandbox]) %>
     <input name="preferences[always_use_sandbox]" type="hidden" value="0" />
   </p>
 </div>
 
-<%= submit_tag t('save_preferences') %>
+<%= submit_tag t('update') %>
 <% end -%>

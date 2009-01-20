@@ -5,4 +5,5 @@ map.resources :orders, :member => {:confirmation => :get, :transmit => :post, :f
 
 map.namespace :admin do |admin|
   admin.resource :pagseguro_settings
+  admin.resources :orders, :has_many => :pagseguro_payments
 end

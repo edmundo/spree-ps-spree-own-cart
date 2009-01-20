@@ -3,7 +3,7 @@ class PagseguroPaymentsController < Spree::BaseController
   #before_filter :load_object, :only => :notification
   layout 'application'
   
-  resource_controller :singleton
+  resource_controller
   #belongs_to :order
 
   create.response do |wants|

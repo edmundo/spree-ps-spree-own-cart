@@ -1,4 +1,4 @@
-class OrdersController < Admin::BaseController
+class OrdersController < Spree::BaseController
 #  before_filter :associate_order, :only => :show
 #
 #  private
@@ -52,20 +52,7 @@ class OrdersController < Admin::BaseController
       session[:order_id] = nil
     end
 
-#        payload = Spree::Pagseguro::CheckoutData.data_to_send(@order)
-
-#        # If we are waiting for payment response the checkout is complete
-#        if object.checkout_complete
-#          # Transmit the form to PagSeguro
-#          if Spree::Pagseguro::Config[:always_use_sandbox] || RAILS_ENV == 'development'
-#            response = post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
-#          else
-#            response = ssl_post(pagseguro_url, payload, 'Content-Length' => "#{payload.size}")
-#          end
-
-#          render :inline => response
-#        end
-     render :layout => false
+    render :layout => false
   end
 
   def finished
