@@ -1,6 +1,30 @@
 # PagSeguro Carrinho Próprio (spree-ps-spree-own-cart)
 Extensão que fornece suporte ao sistema brasileiro de pagamentos online PagSeguro utilizando o carrinho próprio do Spree.
 
+## ATENÇÃO! O DESENVOLVIMENTO DESTA EXTENSÃO FOI DESCONTINUADO
+Após vários mêses de desenvolvimento, em 05/10/2009 foi efetuada uma venda com a finalidade de testar o serviço do
+PagSeguro (autenticação PagSeguro ECD6F78C-3B83-4481-B7B4-539AA81D085A), aceitando o pagamento de um produto pessoal
+do autor desta extensão através do sistema de pagamento do
+PagSeguro no valor de R$ 460,20. Nesta mesma época foi tentada a retirada deste valor para uma conta bancária,
+no entanto ao invés do valor ter sido pago como devido, o valor simplesmente foi bloqueado pelo PagSeguro e não foi
+pago.
+Após vários contatos por telefone e protocolos de atendimento, ninguém soube informar o motivo do bloqueio do dinheiro.
+Foram feitas várias reclamações através do sistema de contato do PagSeguro, reclamações no site reclameaqui, contatos
+para intermediação através da associação Pró-Teste (especializada em defesa do consumidor) incluindo o envio de um
+comunicado extra judicial solicitando a resolução do problema.
+Atualmente passados já 6 meses do ocorrido, uma das respostas que eu obtive do PagSeguro é que "NÃO HÁ PRAZO PARA RESOLUÇÃO
+DO PROBLEMA", indicando uma total falta de respeito e de integridade da empresa, que simplesmente está de posse de um valor
+que não é seu. Não executando nem mesmo o propósito a qual ela se destina que seria de intermediar pagamentos aos seus
+clientes.
+
+A relação atual entre o autor da extensão e a empresa PagSeguro infelizmente está se encaminhando para um processo
+judicial.
+
+Tendo em vista o ocorrido, informo que o desenvolvimento desta extensão está encerrado e não é sugerida nem encorajada a
+integração com o PagSeguro pelo autor, a extensão constará apenas como referência
+caso alguém tenha interesse de olhar o código-fonte.
+
+
 ## Instalação
       script/extension install git://github.com/edmundo/spree-ps-spree-own-cart.git
 
@@ -10,7 +34,9 @@ Esta extensão foi baseada na extensão `pp_website_standard` (suporte ao PayPal
 ## Funcionalidades
 * Envio do pedido de compra ao PagSeguro (isso é o mínimo que essa extensão deve fazer).
 * Posicionada após as etapas de preenchimento de informações de envio (endereço e frete) para que já sejam incluídas no pedido e enviadas ao PagSeguro.
+* Possibilidade de atualização manual dos estados do pagamento se for necessário.
 * Processamento, validação (incluindo suporte a token) e registro de notificações.
+* Atualização automática do estado do pedido de acordo com a aprovação do pagamento (inclusive por notificações).
 * Acompanhamento do estado do pagamento incluindo o histórico de notificações recebidas através da interface administrativa juntamente com as informações do pedido.
 
 ## Estado atual
@@ -20,8 +46,10 @@ Em desenvolvimento.
 Atualmente não estou colocando o código dentro do arquivo `..._extension.rb` utilizando `class_eval`, favor dar uma olhada nos últimos commits aqui `http://github.com/edmundo/spree/tree/app_override` para fazer o código de dentro do `app` ser mixado automaticamente.
 
 ## Pendente
-* Revisar e fazer funcionar de acordo com as últimas mudanças no workflow dos pedidos inseridas no Spree dia 09/01/08.
 * Corrigir problemas de troca de conjunto de caracteres (o PagSeguro utiliza ISO-8859-1 enquanto o Spree utiliza UTF-8).
+* Incluir a possibilidade de adicionar anotações aos pagamentos.
+* Incluir a possibilidade de criar pagamentos manualmente caso tenham sido feitos fora do processo de compra para
+  fazer o pagamento de qualquer valor não previsto.
 * Possibilitar a configuração do tipo de frete (cálculo próprio, PAC calculado pelo PagSeguro, Sedex calculado pelo PagSeguro) através da interface gráfica.
 * Fazer a interface de testes ficar mais parecida com o servidor do PagSeguro.
 * Testar em produção (já que o PagSeguro não tem servidor de testes).
@@ -45,7 +73,7 @@ Acompanhamento do estado do pagamento e notificações recebidas
 ![](http://i498.photobucket.com/albums/rr350/edmundo_vn/spree-ps-spree-own-cart_payment_txn.png)
 
 ## Testes
-O sistema tem algumas ações que respondem com respostas pré-definidas imitando o servidor do PagSeguro, você pode rodar duas instâncias do sistema e fazer uma utilizar a outra como servidor de testes, esse é o padrão. Ou você pode fazer o download do ambiente de testes em `http://visie.com.br/pagseguro/ambientetestes.php`. Conforme as instruções, você deve rodá-lo e ele ficará disponível localmente na porta 443. Eu particularmente não altero o arquivo `/etc/hosts`, a extensão tenta utilizar automaticamente a url de testes como gateway de pagamento se você setar a opção "Sempre utilizar o servidor de testes" ou rodar o sistema em modo de desenvolvimento.
+O sistema tem algumas ações que respondem com respostas pré-definidas imitando o servidor do PagSeguro, a extensão tenta utilizar automaticamente a url de testes como gateway de pagamento se você setar a opção "Sempre utilizar o servidor de testes" ou rodar o sistema em modo de desenvolvimento.
 
 ## Agradecimentos
 Ao Gregg Pollack por ter publicado a extensão `pp_website_standard` e ter me poupado bastante trabalho.
